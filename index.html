@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>G TEJA</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts - Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- model-viewer component -->
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f2f5;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    model-viewer::part(default-progress-bar) {
+      display: none;
+    }
+
+    #mobile-menu {
+      position: fixed;
+      top: 64px; /* change 64px to your header height */
+      left: 0;
+      right: 0;
+      z-index: 40;
+      max-height: calc(100vh - 64px);
+      overflow-y: auto;
+      background-color: white; /* keep background */
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      border-radius: 0 0 0.5rem 0.5rem; /* match your rounded-b-lg */
+    }
+
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+  <!-- Header Section -->
+  <header
+    class="bg-white shadow-md py-4 px-6 md:px-10 lg:px-16 flex justify-between items-center rounded-b-lg sticky top-0 z-50">
+    <div class="flex items-center">
+      <a href="index.html"
+        class="text-2xl font-bold text-gray-800 hover:text-blue-600 transition duration-300 ease-in-out">
+        <span class="text-blue-600">G</span>TEJA
+      </a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button id="menu-btn" class="md:hidden text-gray-700 focus:outline-none" aria-label="Toggle menu">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" viewBox="0 0 24 24">
+        <path d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+
+    <!-- Navigation -->
+    <nav id="menu" class="hidden md:flex">
+      <ul class="flex flex-col md:flex-row md:space-x-8">
+        <li><a href="#"
+            class="block text-gray-700 hover:text-blue-600 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Home</a>
+        </li>
+        <li><a href="projects.html"
+            class="block text-gray-700 hover:text-blue-600 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Projects</a>
+        </li>
+        <li><a href="about.html"
+            class="block text-gray-700 hover:text-blue-600 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">About</a>
+        </li>
+        <li><a href="contact.html"
+            class="block text-gray-700 hover:text-blue-600 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Contact</a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Mobile Dropdown Navigation (Shown below header on mobile when open) -->
+  <nav id="mobile-menu" class="hidden bg-white shadow-md rounded-b-lg md:hidden px-6 py-4">
+    <ul class="flex flex-col space-y-3">
+      <li><a href="#"
+          class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition duration-300">Home</a>
+      </li>
+      <li><a href="projects.html"
+          class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition duration-300">Projects</a>
+      </li>
+      <li><a href="about.html"
+          class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition duration-300">About</a>
+      </li>
+      <li><a href="contact.html"
+          class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition duration-300">Contact</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content Section -->
+  <main class="flex-grow flex flex-col items-center justify-center p-6 space-y-16 max-w-7xl mx-auto w-full">
+
+    <!-- Hero Section -->
+    <div
+      class="flex flex-col md:flex-row items-center justify-between bg-white p-8 rounded-lg shadow-lg max-w-6xl w-full gap-8">
+      <!-- Left: Text Content -->
+      <div class="text-center md:text-left md:w-1/2">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4 leading-tight">
+          Welcome to My <span class="text-blue-600">Professional Portfolio</span>
+        </h1>
+        <p class="text-lg text-gray-600 mb-6">
+          Showcasing my work, skills, and passion for creating impactful solutions.
+        </p>
+        <a href="projects.html"
+          class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition duration-300 ease-in-out">
+          View My Projects
+        </a>
+      </div>
+
+      <!-- Right: 3D Model Viewer -->
+      <div class="w-full md:w-1/2 h-72 md:h-96">
+        <model-viewer src="https://teja84625.github.io/3d-models/earth_cartoon.glb" alt="A 3D model of an Earth"
+          auto-rotate camera-controls shadow-intensity="0" class="w-full h-full rounded-lg" loading="eager"
+          reveal="auto" animation-name="rotation" animation-speed="5" loop autoplay>
+        </model-viewer>
+      </div>
+
+    </div>
+
+    <!-- Personal Quote Section -->
+    <section class="bg-white p-5 rounded-lg shadow-lg max-w-6xl w-full relative">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">My Quote</h2>
+
+      <!-- Decorative Quotation Mark -->
+      <div class="text-6xl text-blue-200 absolute top-4 left-6 select-none pointer-events-none">“</div>
+
+      <div class="relative max-w-3xl mx-auto">
+        <blockquote class="text-center text-xl italic text-gray-700 z-10">
+          “ Even the most powerful explosions begin with a small ignition. ”
+        </blockquote>
+        <div class="mt-4 text-base font-semibold text-gray-500 text-right">
+          ~ G Teja
+        </div>
+      </div>
+    </section>
+
+    <!-- About Me Section -->
+    <section class="bg-white p-10 rounded-lg shadow-lg max-w-6xl w-full">
+      <h2 class="text-3xl font-bold text-gray-900 mb-6 text-center">About Me</h2>
+      <p class="text-gray-700 leading-relaxed max-w-4xl mx-auto text-justify">
+        I am a passionate developer and designer dedicated to crafting digital experiences that make a difference.
+        With over 5 years of experience in frontend development and 3D modeling, I have honed my skills to deliver
+        seamless, responsive, and visually captivating projects. I thrive on solving complex problems creatively and
+        continuously learning new technologies to stay ahead in the fast-paced tech landscape.
+        <br /><br />
+        Beyond coding, I enjoy collaborating with cross-functional teams, translating ideas into reality, and bringing
+        innovative concepts to life. When I’m not coding or designing, you might find me exploring the outdoors, reading
+        about emerging tech trends, or experimenting with new tools and frameworks.
+      </p>
+
+      <!-- Read More Button -->
+      <div class="text-center mt-6">
+        <a href="about.html"
+          class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-300">
+          Read More
+        </a>
+      </div>
+    </section>
+
+    <!-- Contact Call-to-Action Section -->
+    <section class="bg-blue-600 text-white p-12 rounded-lg shadow-lg max-w-6xl w-full text-center">
+      <h2 class="text-4xl font-bold mb-4">Interested in Working Together?</h2>
+      <p class="mb-8 max-w-3xl mx-auto text-lg leading-relaxed">
+        Whether you have a project in mind or just want to say hello, feel free to reach out. I’m always open to
+        exciting opportunities and collaborations.
+      </p>
+      <a href="contact.html"
+        class="inline-block bg-white text-blue-600 font-bold py-4 px-10 rounded-lg shadow-lg hover:bg-gray-100 transition duration-300">
+        Contact Me
+      </a>
+    </section>
+
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="bg-gray-800 text-white text-center py-6 mt-auto rounded-t-lg">
+    <p>&copy; 2025 My Portfolio. All rights reserved.</p>
+  </footer>
+
+  <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J'].includes(e.key.toUpperCase()))) {
+        e.preventDefault();
+      }
+    });
+
+    const btn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    btn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  </script>
+</body>
+
+</html>
