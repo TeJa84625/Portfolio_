@@ -16,6 +16,85 @@
             /* Light gray background */
             color: #333;
         }
+
+        .linkedin-card {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        .linkedin-card img {
+            width: 90px;
+            height: 90px;
+            border-radius: 10%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .linkedin-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .linkedin-info h3 {
+            margin: 0 0 6px;
+            font-size: 22px;
+            color: #0077b5;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .linkedin-info p {
+            margin: 0 0 10px;
+            color: #555;
+            font-size: 15px;
+        }
+
+        .linkedin-info a {
+            display: inline-block;
+            padding: 8px 14px;
+            background-color: #0077b5;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .linkedin-info a:hover {
+          background-color: #005983;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 500px) {
+          .linkedin-card {
+            flex-direction: column;
+            text-align: center;
+          }
+
+          .linkedin-card img {
+            margin-bottom: 15px;
+          }
+
+          .linkedin-info h3,
+          .linkedin-info p {
+            white-space: normal;
+          }
+        }
+
+
     </style>
 </head>
 
@@ -83,19 +162,16 @@
                         <!-- Add more social links as needed -->
                     </div>
                     <br>
-                    <center>
-                        <div class="badge-base LI-profile-badge" data-locale="en_US" data-size="large" data-theme="light" data-type="HORIZONTAL"
-                            data-vanity="gavara-teja" data-version="v1"><a class="badge-base__link LI-simple-link"
-                                href="https://in.linkedin.com/in/gavara-teja?trk=profile-badge"></a></div>
-                    </center>
-                    <script src="https://platform.linkedin.com/badges/js/profile.js" async defer type="text/javascript">
-                        document.addEventListener('contextmenu', e => e.preventDefault());
-                            document.addEventListener('keydown', e => {
-                                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J'].includes(e.key.toUpperCase()))) {
-                                    e.preventDefault();
-                                }
-                            });
-                    </script>
+                    
+                    <div class="linkedin-card">
+                        <img src="https://media.licdn.com/dms/image/v2/D4E33AQFKTZDLqpinzQ/productpage-logo-image_100_100/B4EZX4WGqkHUAY-/0/1743628299227/linkedin_sales_navigator_logo?e=1754330400&v=beta&t=GVWQNMxK-YitUSRj1u08GHlEmDYMh6XOH_SzuuOZYmY"                            alt="Gavara Teja">
+                        <div class="linkedin-info">
+                            <h3>Gavara Teja</h3>
+                            <p>Software Developer | Web & Mobile | AI Enthusiast</p>
+                            <a href="https://www.linkedin.com/in/gavara-teja/" target="_blank">View LinkedIn Profile</a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -103,7 +179,11 @@
 
     <!-- Footer Section (Optional) -->
     <footer class="bg-gray-800 text-white text-center py-4 mt-auto rounded-t-lg">
-        <p>&copy; 2025 My Portfolio. All rights reserved.</p>
+        <p>&copy; <span id="year"></span> G TEJA. All rights reserved.</p>
+        
+        <script>
+            document.getElementById('year').textContent = new Date().getFullYear();
+        </script>
     </footer>
 
     <script>
@@ -126,5 +206,3 @@
     <!-- No specific JS needed for this simple Contact page, but you can add if required -->
     <!-- <script src="js/main.js"></script> -->
 </body>
-
-</html>

@@ -45,8 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (doc.exists) {
                 currentProjectData = { id: doc.id, ...doc.data() };
+
+                // Use `project.title` if available; otherwise fallback to `project.id` which is the name
+                const projectTitle = currentProjectData.title || currentProjectData.id || 'Untitled Project';
+
                 renderProjectDetails(currentProjectData);
-                pageTitle.textContent = currentProjectData.title + " Details";
+
+                pageTitle.textContent = projectTitle + " Details";
+                document.title = projectTitle;
             } else {
                 displayErrorMessage("Project not found.");
             }
@@ -76,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         projectDetailsPage.innerHTML = `
-        <h2>${project.title || project.id || 'Untitled Project'}</h2>
+        <h2 class="text-blue-600 font-bold text-6xl mb-6 mt-0 text-center w-full">${ project.id || 'Untitled Project'}</h2>
         <div class="meta-info">
             ${project.client ? `<div><strong>Client:</strong> ${project.client}</div>` : ''}
             ${project.date ? `<div><strong>Date:</strong> ${project.date}</div>` : ''}
@@ -85,12 +91,19 @@ document.addEventListener('DOMContentLoaded', () => {
             ${project.upload_date ? `<div><strong>Uploaded:</strong> ${project.upload_date}</div>` : ''}
             ${project.last_updated ? `<div><strong>Last Updated:</strong> ${project.last_updated}</div>` : ''}
             ${project.views !== undefined ? `<div><strong>Views:</strong> ${project.views}</div>` : ''}
-            ${project.button_label ? `<div><strong>${project.button_label} :</strong> ${project.downloads || 0}</div>` : ''}
+            ${project.button_label && project.button_label.toLowerCase() !== 'none' ? `
+                    <div class="project-card-stat-item">
+                        <svg class="stat-icon" viewBox="0 0 24 24">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                        </svg>
+                        ${project.downloads || 0} ${project.button_label}
+                    </div>`
+                    : ''}
             ${project.difficulty ? `<div><strong>Difficulty:</strong> <span class="${difficultyColorClass}">${project.difficulty}</span></div>` : ''}
         </div>
 
         <div class="tags">
-            <h3>Tags:</h3>
+            <h3 class="text-gray-700 border-b-2 border-gray-200 pb-2 mt-9 mb-5 text-2xl w-full">Tags:</h3>
             ${project.tags && project.tags.length > 0 ? project.tags.map(tag => `<span>${tag}</span>`).join('') : '<p>No tags available.</p>'}
         </div>
 
@@ -114,7 +127,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         <h3>Project Overview</h3>
         <p class="short-description">${project.short_description || 'No short description provided.'}</p>
+        <h3>Project Details</h3>
         <p class="long-description">${project.long_description || 'No detailed description provided.'}</p>
+
 
         ${project.video_url ? `
             <h3>Project Video</h3>
@@ -126,9 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ${project.code ? `
             <h3>Code Snippet</h3>
             <div class="code-container">
+                <button id="copyCodeButton" class="copy-btn" aria-label="Copy code">📁 Copy Code</button>
                 <pre class="code-block"><code>${escapeHtml(project.code)}</code></pre>
-                <button class="copy-code-btn" id="copyCodeButton">Copy Code</button>
-            </div>
+            </div> 
         ` : ''}
 
         ${project.sponsors && project.sponsors.length > 0 ? `
@@ -178,10 +193,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.execCommand('copy');
                 document.body.removeChild(textarea);
 
-                copyButton.textContent = 'Copied!';
+                copyButton.textContent = '✅ Copied!';
                 setTimeout(() => {
-                    copyButton.textContent = 'Copy Code';
-                }, 1000);
+                    copyButton.textContent = '📁 Copy Code';
+                }, 10000);
             });
         }
     }

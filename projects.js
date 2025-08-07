@@ -14,7 +14,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore(); // Get Firestore instance
+const db = firebase.firestore();
 
 // Get references to HTML elements
 const projectsGridElement = document.getElementById('projectsGrid');
@@ -24,18 +24,18 @@ const clearSearchButton = document.getElementById('clearSearchButton');
 const technologyFilter = document.getElementById('technologyFilter');
 const tagsFilter = document.getElementById('tagsFilter');
 const statusFilter = document.getElementById('statusFilter');
+const sortFilter = document.getElementById('sortFilter');
 const clearFiltersButton = document.getElementById('clearFiltersButton');
 const noProjectsMessage = document.getElementById('noProjectsMessage');
 
-let allProjectsData = []; // Store all fetched projects to filter client-side
+let allProjectsData = [];
 
 /**
  * Fetches all projects from the 'projects' Firestore collection.
- * @returns {Promise<Array>} A promise that resolves with an array of project data.
  */
 async function fetchProjects() {
     try {
-        projectListSpinnerContainer.style.display = 'flex'; // Show spinner (flex for centering)
+        projectListSpinnerContainer.style.display = 'flex';
         const projectsCollection = db.collection("projects");
         const snapshot = await projectsCollection.get();
         const projects = [];
@@ -48,30 +48,25 @@ async function fetchProjects() {
         alert("Failed to load projects. Please check your console for details.");
         return [];
     } finally {
-        projectListSpinnerContainer.style.display = 'none'; // Hide spinner
+        projectListSpinnerContainer.style.display = 'none';
     }
 }
 
 /**
- * Populates unique technologies and tags into their respective filter dropdowns.
+ * Populates filters for technologies and tags.
  */
 function populateFilters() {
     const uniqueTechnologies = new Set();
     const uniqueTags = new Set();
 
     allProjectsData.forEach(project => {
-        if (project.technologies && Array.isArray(project.technologies)) {
-            project.technologies.forEach(tech => uniqueTechnologies.add(tech.trim()));
-        }
-        if (project.tags && Array.isArray(project.tags)) {
-            project.tags.forEach(tag => uniqueTags.add(tag.trim()));
-        }
+        (project.technologies || []).forEach(tech => uniqueTechnologies.add(tech.trim()));
+        (project.tags || []).forEach(tag => uniqueTags.add(tag.trim()));
     });
 
-    // Populate Technology Filter
-    technologyFilter.innerHTML = '<option value="">All Technologies</option>'; // Keep default option
+    technologyFilter.innerHTML = '<option value="">All Technologies</option>';
     Array.from(uniqueTechnologies).sort().forEach(tech => {
-        if (tech) { // Ensure no empty strings
+        if (tech) {
             const option = document.createElement('option');
             option.value = tech;
             option.textContent = tech;
@@ -79,10 +74,9 @@ function populateFilters() {
         }
     });
 
-    // Populate Tags Filter
-    tagsFilter.innerHTML = '<option value="">All Tags</option>'; // Keep default option
+    tagsFilter.innerHTML = '<option value="">All Tags</option>';
     Array.from(uniqueTags).sort().forEach(tag => {
-        if (tag) { // Ensure no empty strings
+        if (tag) {
             const option = document.createElement('option');
             option.value = tag;
             option.textContent = tag;
@@ -91,104 +85,89 @@ function populateFilters() {
     });
 }
 
-
 /**
- * Filters projects based on current search and filter selections.
+ * Filters and sorts the projects.
  */
 function filterProjects() {
     const searchTerm = projectSearchInput.value.toLowerCase().trim();
     const selectedTechnology = technologyFilter.value.toLowerCase();
     const selectedTag = tagsFilter.value.toLowerCase();
     const selectedStatus = statusFilter.value.toLowerCase();
+    const selectedSort = sortFilter.value;
 
-    const filteredProjects = allProjectsData.filter(project => {
-        const projectName = project.id ? project.id.toLowerCase() : '';
-        const shortDescription = project.short_description ? project.short_description.toLowerCase() : '';
-        const longDescription = project.long_description ? project.long_description.toLowerCase() : '';
-        const projectTechnologies = project.technologies ? project.technologies.map(t => t.toLowerCase()) : [];
-        const projectTags = project.tags ? project.tags.map(t => t.toLowerCase()) : [];
-        const projectStatus = project.project_status ? project.project_status.toLowerCase() : '';
+    let filteredProjects = allProjectsData.filter(project => {
+        const name = (project.id || '').toLowerCase();
+        const shortDesc = (project.short_description || '').toLowerCase();
+        const longDesc = (project.long_description || '').toLowerCase();
+        const technologies = (project.technologies || []).map(t => t.toLowerCase());
+        const tags = (project.tags || []).map(t => t.toLowerCase());
+        const status = (project.project_status || '').toLowerCase();
 
-        // Search by text
-        const matchesSearch = searchTerm === '' ||
-                              projectName.includes(searchTerm) ||
-                              shortDescription.includes(searchTerm) ||
-                              longDescription.includes(searchTerm);
-
-        // Filter by technology
-        const matchesTechnology = selectedTechnology === '' ||
-                                  projectTechnologies.includes(selectedTechnology);
-
-        // Filter by tag
-        const matchesTag = selectedTag === '' ||
-                           projectTags.includes(selectedTag);
-
-        // Filter by status
-        const matchesStatus = selectedStatus === '' ||
-                              projectStatus === selectedStatus;
+        const matchesSearch = !searchTerm || name.includes(searchTerm) || shortDesc.includes(searchTerm) || longDesc.includes(searchTerm);
+        const matchesTechnology = !selectedTechnology || technologies.includes(selectedTechnology);
+        const matchesTag = !selectedTag || tags.includes(selectedTag);
+        const matchesStatus = !selectedStatus || status === selectedStatus;
 
         return matchesSearch && matchesTechnology && matchesTag && matchesStatus;
     });
 
-    renderProjectCards(filteredProjects); // Re-render the grid with filtered projects
-    if (filteredProjects.length === 0 && (searchTerm !== '' || selectedTechnology !== '' || selectedTag !== '' || selectedStatus !== '')) {
+    // Apply sorting
+    switch (selectedSort) {
+        case 'name_asc':
+            filteredProjects.sort((a, b) => a.id.localeCompare(b.id));
+            break;
+        case 'date_desc':
+            filteredProjects.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            break;
+        case 'date_asc':
+            filteredProjects.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            break;
+        case 'views_desc':
+            filteredProjects.sort((a, b) => (b.views || 0) - (a.views || 0));
+            break;
+        case 'views_asc':
+            filteredProjects.sort((a, b) => (a.views || 0) - (b.views || 0));
+            break;
+    }
+
+    renderProjectCards(filteredProjects);
+    if (filteredProjects.length === 0 && (searchTerm || selectedTechnology || selectedTag || selectedStatus)) {
         noProjectsMessage.classList.remove('hidden-message');
     } else {
         noProjectsMessage.classList.add('hidden-message');
     }
 }
 
-
 /**
- * Renders all projects as cards in the grid.
- * @param {Array} projects - An array of project data.
+ * Renders project cards.
  */
 function renderProjectCards(projects) {
-    projectsGridElement.innerHTML = ''; // Clear existing cards
+    projectsGridElement.innerHTML = '';
 
-    if (projects.length === 0) {
-        // Only show "No projects match" if filters are active
-        // The filterProjects function already handles showing/hiding this message
-        return;
-    }
+    if (projects.length === 0) return;
 
     projects.forEach(project => {
         const card = document.createElement('div');
         card.classList.add('project-card');
-        card.dataset.projectId = project.id; // Store project ID on the card
+        card.dataset.projectId = project.id;
 
-        // Determine image to use
         const imageUrl = (project.image_urls && project.image_urls.length > 0) ? project.image_urls[0] : null;
-        let imageHtml = '';
-        if (imageUrl) {
-            imageHtml = `<img src="${imageUrl}" alt="${project.id} thumbnail" class="project-card-image" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/333333?text=Image+Not+Found';" />`;
-        } else {
-            // Fallback: project name as text on a colored background
-            imageHtml = `<div class="project-card-image-fallback">${project.id}</div>`;
-        }
+        const imageHtml = imageUrl
+            ? `<img src="${imageUrl}" alt="${project.id} thumbnail" class="project-card-image" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/333333?text=Image+Not+Found';" />`
+            : `<div class="project-card-image-fallback">${project.id}</div>`;
 
-        // Show only Downloads count, remove visits
         const downloadsCount = project.downloads !== undefined ? project.downloads : 0;
         const buttonLabel = project.button_label || 'Downloads';
 
-        // Determine project status and class for styling
-        const projectStatus = project.project_status ? project.project_status.toLowerCase() : 'unknown';
+        const projectStatus = (project.project_status || 'unknown').toLowerCase();
         let statusBadgeClass = '';
         switch (projectStatus) {
-            case 'ongoing':
-                statusBadgeClass = 'status-ongoing';
-                break;
-            case 'completed':
-                statusBadgeClass = 'status-completed';
-                break;
-            case 'upcoming':
-                statusBadgeClass = 'status-upcoming';
-                break;
-            default:
-                statusBadgeClass = 'status-unknown';
+            case 'ongoing': statusBadgeClass = 'status-ongoing'; break;
+            case 'completed': statusBadgeClass = 'status-completed'; break;
+            case 'upcoming': statusBadgeClass = 'status-upcoming'; break;
+            default: statusBadgeClass = 'status-unknown';
         }
 
-        // for shord discription <p class="project-card-description">${project.short_description || 'No description available.'}</p>
         card.innerHTML = `
             <div class="project-status-badge ${statusBadgeClass}">
                 ${project.project_status || 'Status N/A'}
@@ -197,60 +176,47 @@ function renderProjectCards(projects) {
                 ${imageHtml}
             </div>
             <div class="project-card-content">
-                <h3 class="project-card-title">${project.id}</h3> 
+                <h3 class="project-card-title">${project.id}</h3>
                 <div class="project-card-stats">
                     <div class="project-card-stat-item">
-                        <svg class="stat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 4.5C7 4.5 2.73 7.61 0 12c2.73 4.39 7 7.5 12 7.5s9.27-3.11 12-7.5c-2.73-4.39-7-7.5-12-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 0 12c2.73 4.39 7 7.5 12 7.5s9.27-3.11 12-7.5c-2.73-4.39-7-7.5-12-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
                         ${project.views !== undefined ? project.views : 0} Views
                     </div>
-                    <div class="project-card-stat-item">
-                        <svg class="stat-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                        ${downloadsCount} ${buttonLabel}
-                    </div>
+                    ${
+                        buttonLabel.toLowerCase() !== 'none' ? `
+                        <div class="project-card-stat-item">
+                            <svg class="stat-icon" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            ${downloadsCount} ${buttonLabel}
+                        </div>` : ''
+                    }
                 </div>
             </div>
         `;
 
         projectsGridElement.appendChild(card);
 
-        // Add click event listener to each card
         card.addEventListener('click', async () => {
-            // Increment views in Firestore
             try {
                 const projectRef = db.collection("projects").doc(project.id);
-                // Using transaction for safe increment if multiple users click at once
                 await db.runTransaction(async (transaction) => {
-                    const sfDoc = await transaction.get(projectRef);
-                    if (!sfDoc.exists) {
-                        throw "Document does not exist!";
-                    }
-                    const newViews = (sfDoc.data().views || 0) + 1;
+                    const doc = await transaction.get(projectRef);
+                    if (!doc.exists) throw "Document does not exist!";
+                    const newViews = (doc.data().views || 0) + 1;
                     transaction.update(projectRef, { views: newViews });
                 });
-                console.log(`Views incremented for ${project.id}`);
             } catch (error) {
                 console.error(`Error incrementing views for ${project.id}:`, error);
-                // Optionally, increment locally even if Firestore fails
-                // project.views = (project.views || 0) + 1;
-                // update card stat
             }
 
-            // Navigate to the detail page
             window.location.href = `project_detail.html?id=${encodeURIComponent(project.id)}`;
         });
     });
 }
 
-// --- Event Listeners for Filtering and Search ---
-
+// --- Event Listeners ---
 projectSearchInput.addEventListener('input', () => {
     filterProjects();
-    // Show/hide clear search button
-    if (projectSearchInput.value.trim() !== '') {
-        clearSearchButton.style.display = 'inline-block';
-    } else {
-        clearSearchButton.style.display = 'none';
-    }
+    clearSearchButton.style.display = projectSearchInput.value.trim() !== '' ? 'inline-block' : 'none';
 });
 
 clearSearchButton.addEventListener('click', () => {
@@ -262,17 +228,19 @@ clearSearchButton.addEventListener('click', () => {
 technologyFilter.addEventListener('change', filterProjects);
 tagsFilter.addEventListener('change', filterProjects);
 statusFilter.addEventListener('change', filterProjects);
+sortFilter.addEventListener('change', filterProjects);
 
 clearFiltersButton.addEventListener('click', () => {
     technologyFilter.value = '';
     tagsFilter.value = '';
     statusFilter.value = '';
-    filterProjects(); // Re-apply filters
+    sortFilter.value = '';
+    filterProjects();
 });
 
-// Initial load: Fetch projects, populate filters, and render cards
+// Initial load
 document.addEventListener('DOMContentLoaded', async () => {
-    allProjectsData = await fetchProjects(); // Fetch once and store
+    allProjectsData = await fetchProjects();
     populateFilters();
-    filterProjects(); // Initial render with no filters applied
+    filterProjects();
 });

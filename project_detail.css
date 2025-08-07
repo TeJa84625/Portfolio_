@@ -72,18 +72,6 @@ body {
     /* Ensure sufficient height */
 }
 
-.project-details-page h2 {
-    color: #007bff;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    margin-top: 0;
-    font-size: 2.8em;
-    /* Larger title */
-    margin-bottom: 25px;
-    /* More margin */
-    width: 100%;
-    text-align: center;
-}
-
 .project-details-page h3 {
     color: #495057;
     border-bottom: 2px solid #e0e0e0;
@@ -109,9 +97,9 @@ body {
 
 /* Short description specific styling */
 .project-details-page .short-description {
-    font-size: 1.3em;
+    font-size: 1.2em;
     /* Larger for short description */
-    font-weight: bold;
+    /* font-weight: bold; */
     /* Bold for short description *
             margin-bottom: 20px;
             /* More space below */
@@ -120,15 +108,7 @@ body {
 /* Long description specific styling */
 .project-details-page .long-description {
     font-size: 1.1em;
-    /* Standard size for essay-like text */
-    line-height: 2;
-    /* Increased line height for readability */
-    text-align: justify;
-    /* Justify for essay-like appearance */
-    white-space: pre-wrap;
-    /* NEW: Preserve spaces and newlines */
     word-wrap: break-word;
-    /* Ensure long words break */
 }
 
 
@@ -687,40 +667,76 @@ body {
 .code-container {
     position: relative;
     width: 100%;
-    /* Full width */
-    height: auto;
-    /* Allow the container to grow as needed */
-    max-height: 30%;
-    /* Set a maximum height of 30% of the viewport height */
-    margin-top: 30px;
-    /* Added more space above */
-    background-color: #f5f5f5;
-    padding: 20px;
+    max-height: 150vh;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    background-color: #000000d2;
+    padding-left: 10px;
+    padding-bottom: 5px;
+    padding-top: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    /* Hide overflow */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    /* Add gap between button and code container */
+    justify-content: flex-start;
 }
 
-/* Ensure the code block is scrollable if content overflows */
+/* Floating copy button */
+.copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 10;
+}
+
+.copy-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Make code scrollable */
 .code-block {
     overflow-y: auto;
-    /* Allow vertical scrolling if code is too long */
-    height: calc(100% - 50px);
-    /* Adjust for padding and button height */
+    height: calc(100% - 10px);
     white-space: pre-wrap;
     word-wrap: break-word;
-}
-
-/* Optional: Style for the code block to look cleaner */
-.code-container pre {
-    margin: 0;
-    padding: 0;
     font-family: 'Courier New', Courier, monospace;
     font-size: 14px;
+    margin-top: 50px;
+    /* give some space below floating button */
+}
+
+/* Custom scrollbar for code block */
+.code-block::-webkit-scrollbar {
+    width: 8px;
+}
+
+.code-block::-webkit-scrollbar-track {
+    background: #000000d2;
+    border-radius: 8px;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+    background: #555;
+    /* Dark gray for contrast */
+    border-radius: 8px;
+}
+
+.code-block::-webkit-scrollbar-thumb:hover {
+    background: #888;
+    /* Lighter on hover */
+}
+
+/* Firefox support */
+.code-block {
+    scrollbar-width: thin;
+    scrollbar-color: #555 #000000d2;
 }

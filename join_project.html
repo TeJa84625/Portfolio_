@@ -186,7 +186,11 @@
 
     <!-- Footer Section (Optional) -->
     <footer class="bg-gray-800 text-white text-center py-4 mt-auto rounded-t-lg">
-        <p>&copy; 2025 My Portfolio. All rights reserved.</p>
+        <p>&copy; <span id="year"></span> G TEJA. All rights reserved.</p>
+        
+        <script>
+            document.getElementById('year').textContent = new Date().getFullYear();
+        </script>
     </footer>
 
     <!-- QR Code Library -->

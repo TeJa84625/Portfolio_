@@ -121,11 +121,12 @@
 
       <!-- Right: 3D Model Viewer -->
       <div class="w-full md:w-1/2 h-72 md:h-96">
-        <model-viewer src="https://teja84625.github.io/3d-models/earth_cartoon.glb" alt="A 3D model of an Earth"
-          auto-rotate camera-controls shadow-intensity="0" class="w-full h-full rounded-lg" loading="eager"
-          reveal="auto" animation-name="rotation" animation-speed="5" loop autoplay>
+        <model-viewer src="https://teja84625.github.io/3d-models/earth_cartoon.glb" alt="A 3D model of an Earth" auto-rotate
+          camera-controls shadow-intensity="0" class="w-full h-full rounded-lg" loading="eager" reveal="auto"
+          animation-name="rotation" animation-speed="1" loop autoplay camera-orbit="0deg 75deg 5.5m">
         </model-viewer>
       </div>
+
 
     </div>
 
@@ -141,7 +142,7 @@
           “ Even the most powerful explosions begin with a small ignition. ”
         </blockquote>
         <div class="mt-4 text-base font-semibold text-gray-500 text-right">
-          ~ G Teja
+          ~ Teja
         </div>
       </div>
     </section>
@@ -186,7 +187,11 @@
 
   <!-- Footer Section -->
   <footer class="bg-gray-800 text-white text-center py-6 mt-auto rounded-t-lg">
-    <p>&copy; 2025 My Portfolio. All rights reserved.</p>
+    <p>&copy; <span id="year"></span> G TEJA. All rights reserved.</p>
+    
+    <script>
+      document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
   </footer>
 
   <script>
@@ -205,5 +210,3 @@
     });
   </script>
 </body>
-
-</html>
