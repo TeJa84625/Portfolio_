@@ -155,21 +155,17 @@
                                 (INR):</label>
                             <input type="number" id="fundAmount" placeholder="₹" min="10" step="10"
                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500" />
-                            <button type="button" id="generateQrButton"
-                                class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out w-full">
-                                Make payment</button>
 
                             <div class="qr-code-container" id="qrCodeContainer" style="display:none;">
                                 <div id="qrCodeDiv"></div>
                                 <p>Scan this QR code with your UPI app</p>
-                                <p>UPI ID: <a href="upi://pay?pa=6301619629.wallet@phonepe&pn=Your%20Name&cu=INR" style="color: blue; text-decoration: underline;">
-                                    6301619629.wallet@phonepe</a>
+                                <p>UPI ID: <a style="color: blue;"> 6301619629.wallet@phonepe</a>
                                 </p>
                             </div>
                             <label for="transactionId" class="block text-gray-700 text-sm font-bold mb-2 mt-4">UPI
                                 Transaction ID:</label>
                             <input type="text" id="transactionId"
-                                placeholder="Enter UPI Mobile Number / Transaction ID after payment"
+                                placeholder="Enter Transaction ID after payment"
                                 class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500" />
                             <p id="paymentStatus" class="mt-4 font-bold text-center"></p>
                         </div>
@@ -186,6 +182,19 @@
         </div>
     </div>
 
+    <!-- Modal Popup for Thank You -->
+    <div id="thankYouModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-60">
+        <div id="thankYouContent"
+            class="bg-white rounded-lg shadow-lg p-6 max-w-md w-full text-center transform scale-90 opacity-0 transition duration-300 ease-out">
+            <!-- Content injected dynamically -->
+        </div>
+    </div>
+    <div id="blastContainer" class="fixed pointer-events-none z-40"
+        style="top:50%; left:50%; transform:translate(-50%, -50%); width:1024px; height:700px;">
+    </div>
+
+
+
     <!-- Footer Section (Optional) -->
     <footer class="bg-gray-800 text-white text-center py-4 mt-auto rounded-t-lg">
         <p>&copy; <span id="year"></span> G TEJA. All rights reserved.</p>
@@ -197,6 +206,8 @@
 
     <!-- QR Code Library -->
     <script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> -->
 
     <!-- Firebase and Join Project JavaScript -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>

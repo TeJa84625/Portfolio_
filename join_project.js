@@ -13,17 +13,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const fundAmountInput = document.getElementById('fundAmount');
     const transactionIdInput = document.getElementById('transactionId');
     const joinProjectForm = document.getElementById('joinProjectForm');
-    const formMessage = document.getElementById('formMessage');
 
     // QR code elements
-    const generateQrButton = document.getElementById('generateQrButton');
     const qrCodeContainer = document.getElementById('qrCodeContainer');
     const qrCodeDiv = document.getElementById('qrCodeDiv');
     const paymentStatus = document.getElementById('paymentStatus');
     const yourUpiId = "6301619629.wallet@phonepe";
 
     const urlParams = new URLSearchParams(window.location.search);
-    const projectName = urlParams.get('projectName');
+    const projectName = urlParams.get('projectName') || 'Your Project';
     const projectId = urlParams.get('projectId');
 
     if (projectName) {
@@ -31,11 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
         formProjectTitle.textContent = `Join "${projectName}"`;
     }
 
-    if (projectId) {
-        backToProjectButton.href = `project_detail.html?id=${projectId}`;
-    } else {
-        backToProjectButton.href = 'projects.html';
-    }
+    backToProjectButton.href = projectId ? `project_detail.html?id=${projectId}` : 'projects.html';
+
+    // Hint below fund input
+    const fundAmountNote = document.createElement('small');
+    fundAmountNote.className = 'text-gray-500 block mt-1';
+    fundAmountNote.textContent = 'Minimum sponsorship amount is ₹10.';
+    fundAmountInput.parentNode.insertBefore(fundAmountNote, fundAmountInput.nextSibling);
 
     isSponsorCheckbox.addEventListener('change', () => {
         const isChecked = isSponsorCheckbox.checked;
@@ -44,31 +44,32 @@ document.addEventListener('DOMContentLoaded', () => {
         fundAmountInput.required = isChecked;
         transactionIdInput.required = isChecked;
 
-        if (!isChecked) {
-            fundAmountInput.value = '';
-            transactionIdInput.value = '';
-            paymentStatus.textContent = '';
-            qrCodeContainer.style.display = 'none';
-            qrCodeDiv.innerHTML = '';
+        if (!isChecked) clearQrAndButton();
+    });
 
-            const existingUpiLink = document.getElementById('upiPaymentLink');
-            if (existingUpiLink) existingUpiLink.remove();
+    fundAmountInput.addEventListener('input', () => {
+        if (!isSponsorCheckbox.checked) return;
+
+        const amount = parseFloat(fundAmountInput.value);
+        if (!isNaN(amount) && amount >= 10) {
+            generateUpiPaymentQr(amount);
+        } else {
+            clearQrAndButton();
         }
     });
 
-    generateQrButton.addEventListener('click', () => {
-        const amount = parseFloat(fundAmountInput.value);
-        if (isNaN(amount) || amount <= 0) {
-            alert("Please enter a valid amount.");
-            return;
-        }
+    function clearQrAndButton() {
+        qrCodeDiv.innerHTML = '';
+        qrCodeContainer.style.display = 'none';
 
-        if (amount < 10) {
-            alert("The minimum sponsorship amount is ₹10.");
-            return;
-        }
+        const existingBtn = document.getElementById('upiPaymentBtn');
+        if (existingBtn) existingBtn.remove();
 
-        const transactionNote = `Funding for Project: ${projectName || 'Generic Project'}`;
+        paymentStatus.textContent = '';
+    }
+
+    function generateUpiPaymentQr(amount) {
+        const transactionNote = `Funding for Project: ${projectName}`;
         const upiUrl = `upi://pay?pa=${yourUpiId}&pn=Portfolio&tn=${encodeURIComponent(transactionNote)}&am=${amount.toFixed(2)}&cu=INR`;
 
         qrCodeDiv.innerHTML = '';
@@ -84,45 +85,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 correctLevel: QRCode.CorrectLevel.H
             });
 
-            // Add a clickable UPI link below QR
-            const existingUpiLink = document.getElementById('upiPaymentLink');
-            if (existingUpiLink) {
-                existingUpiLink.remove();
-            }
+            const existingBtn = document.getElementById('upiPaymentBtn');
+            if (existingBtn) existingBtn.remove();
 
-            const upiLink = document.createElement('a');
-            upiLink.href = upiUrl;
-            upiLink.id = 'upiPaymentLink';
-            upiLink.textContent = `Click here to pay using UPI App`;
-            upiLink.style.display = 'block';
-            upiLink.style.marginTop = '10px';
-            upiLink.style.color = '#007bff';
-            upiLink.style.textDecoration = 'underline';
-            upiLink.target = '_blank'; // optional
-            qrCodeContainer.appendChild(upiLink);
+            const upiBtn = document.createElement('button');
+            upiBtn.id = 'upiPaymentBtn';
+            upiBtn.textContent = 'Pay Using UPI App';
+            upiBtn.className = 'mt-4 bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition';
+            upiBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                if (isMobile) {
+                    window.location.href = upiUrl;
+                } else {
+                    alert("To make a payment, please open this page on your mobile device or scan the QR code.");
+                }
+            });
 
-            setTimeout(() => {
-                const qrImage = qrCodeDiv.querySelector('img');
-                if (qrImage) qrImage.removeAttribute('title');
-
-                const qrCanvas = qrCodeDiv.querySelector('canvas');
-                if (qrCanvas) qrCanvas.removeAttribute('title');
-
-                if (qrCodeDiv.hasAttribute('title')) qrCodeDiv.removeAttribute('title');
-            }, 500);
-
-            paymentStatus.textContent = "Scan the QR code or click the link below to pay.";
-            paymentStatus.style.color = "#007bff";
+            qrCodeContainer.appendChild(upiBtn);
+            paymentStatus.textContent = "Scan the QR code or use the button below to pay.";
+            paymentStatus.className = "text-blue-600 mt-2";
         } else {
             paymentStatus.textContent = "QR Code library not found.";
-            paymentStatus.style.color = "#dc3545";
+            paymentStatus.className = "text-red-600";
         }
-    });
+    }
 
     joinProjectForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        formMessage.textContent = "Submitting your application...";
-        formMessage.className = "form-message animate-show";
 
         const userName = userNameInput.value.trim();
         const userEmail = userEmailInput.value.trim();
@@ -132,25 +122,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const transactionId = isSponsor ? transactionIdInput.value.trim() : "#";
 
         if (isSponsor) {
-            if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-                formMessage.textContent = "Please enter a valid sponsorship amount.";
-                formMessage.className = "form-message error animate-show";
-                return;
-            }
-            if (parseFloat(amount) < 10) {
-                formMessage.textContent = "The minimum sponsorship amount is ₹10.";
-                formMessage.className = "form-message error animate-show";
+            if (!amount || isNaN(amount) || parseFloat(amount) < 10) {
+                alert("Minimum sponsorship amount is ₹10.");
                 return;
             }
             if (!transactionId) {
-                formMessage.textContent = "Please enter a transaction ID.";
-                formMessage.className = "form-message error animate-show";
+                alert("Please enter a transaction ID.");
                 return;
             }
         }
 
         const formURL = `https://docs.google.com/forms/d/e/1FAIpQLSdeulDHC05Ug16iyAp19MUI334OlqmlrYYt2lF1dCYFe0DtPw/formResponse` +
-            `?entry.1328315084=${encodeURIComponent(projectName || "Unknown Project")}` +
+            `?entry.1328315084=${encodeURIComponent(projectName)}` +
             `&entry.1878610209=${encodeURIComponent(userName)}` +
             `&entry.1587908217=${encodeURIComponent(userEmail)}` +
             `&entry.1876828639=${encodeURIComponent(userMessage)}` +
@@ -163,25 +146,130 @@ document.addEventListener('DOMContentLoaded', () => {
                 mode: 'no-cors'
             });
 
-            formMessage.textContent = "Thank you! Your application has been submitted.";
-            formMessage.className = "form-message success animate-show";
-
             joinProjectForm.reset();
             sponsorFieldsDiv.style.display = 'none';
             qrCodeContainer.style.display = 'none';
             qrCodeDiv.innerHTML = '';
+            const existingBtn = document.getElementById('upiPaymentBtn');
+            if (existingBtn) existingBtn.remove();
 
-            const existingUpiLink = document.getElementById('upiPaymentLink');
-            if (existingUpiLink) existingUpiLink.remove();
-
+            showThankYouModal(isSponsor, projectName);
         } catch (error) {
             console.error("Form submission failed:", error);
-            formMessage.textContent = "Failed to submit. Please try again.";
-            formMessage.className = "form-message error animate-show";
+            alert("Failed to submit. Please try again.");
         }
-
-        setTimeout(() => {
-            formMessage.classList.remove("animate-show");
-        }, 5000);
     });
+
+    function showThankYouModal(isSponsor, projectName) {
+    const modal = document.getElementById('thankYouModal');
+    const content = document.getElementById('thankYouContent');
+
+    content.classList.remove('scale-90', 'opacity-0');
+    content.classList.add('scale-100', 'opacity-100');
+
+    if (isSponsor) {
+        content.innerHTML = `
+            <h2 class="text-green-600 text-3xl font-semibold mb-3">🎉 Thanks for funding!</h2>
+            <p class="text-gray-700 text-lg">We’ll review your transaction and add you to our sponsors list.</p>
+            <p class="text-gray-600 mt-3">Feel free to contact us for any help.</p>
+        `;
+
+        triggerBlastEffect();
+    } else {
+        content.innerHTML = `
+            <h2 class="text-blue-600 text-2xl font-semibold mb-2">🙌 Thanks for joining!</h2>
+            <p class="text-gray-700">We’ll review your application and respond shortly.</p>
+            <p class="text-gray-600 mt-2">Welcome to the <strong>${projectName}</strong> team!</p>
+        `;
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+
+        // Stop confetti on modal close just in case
+        if (typeof $ !== 'undefined' && $.confetti) {
+            $.confetti.stop();
+        }
+    }, 6000);
+    }
+    
+    function triggerBlastEffect() {
+    const blastContainer = document.getElementById('blastContainer');
+    const PARTICLE_COUNT = 128;
+    const PARTICLE_SIZE = {w: 8, h: 6};
+    const containerWidth = 1024;
+    const containerHeight = 700;
+    const centerX = containerWidth / 2;
+    const centerY = containerHeight / 2;
+    const colors = ['bg-yellow-400', 'bg-red-500', 'bg-orange-500', 'bg-white'];
+
+    blastContainer.innerHTML = '';
+    const particles = [];
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+        const p = document.createElement('div');
+        p.classList.add('absolute', 'rounded-sm', colors[Math.floor(Math.random() * colors.length)]);
+
+        Object.assign(p.style, {
+            width: PARTICLE_SIZE.w + 'px',
+            height: PARTICLE_SIZE.h + 'px',
+            left: (centerX - PARTICLE_SIZE.w/2) + 'px',
+            top: (centerY - PARTICLE_SIZE.h/2) + 'px',
+            opacity: '0',
+            transformOrigin: 'center center',
+        });
+
+        blastContainer.appendChild(p);
+        particles.push(p);
+    }
+
+    function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+    }
+
+    function cubicBezier(p0, c0, c1, p1, t) {
+        const nt = 1 - t;
+        return {
+            x: nt**3*p0.x + 3*nt**2*t*c0.x + 3*nt*t**2*c1.x + t**3*p1.x,
+            y: nt**3*p0.y + 3*nt**2*t*c0.y + 3*nt*t**2*c1.y + t**3*p1.y
+        };
+    }
+
+    const paths = particles.map(() => ({
+        p0: {x: centerX, y: centerY},
+        p1: {x: Math.random() * containerWidth, y: Math.random() * containerHeight},
+        p2: {x: Math.random() * containerWidth, y: Math.random() * containerHeight},
+        p3: {x: Math.random() * containerWidth, y: containerHeight + 128}
+    }));
+
+    const start = performance.now();
+
+    function animate(time) {
+        const duration = 3000;
+        const elapsed = time - start;
+        const t = Math.min(elapsed / duration, 1);
+        const easedT = easeOutCubic(t);
+
+        particles.forEach((p, i) => {
+            const pos = cubicBezier(paths[i].p0, paths[i].p1, paths[i].p2, paths[i].p3, easedT);
+            p.style.left = `${pos.x - PARTICLE_SIZE.w/2}px`;
+            p.style.top = `${pos.y - PARTICLE_SIZE.h/2}px`;
+            p.style.opacity = '1';
+            p.style.transform = `rotate(${easedT * 720}deg) scaleY(${Math.sin(Math.PI * easedT * 10).toFixed(2)})`;
+        });
+
+        if (t < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            blastContainer.innerHTML = '';
+        }
+    }
+
+    requestAnimationFrame(animate);
+}
+
+
 });
