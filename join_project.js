@@ -50,6 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
             paymentStatus.textContent = '';
             qrCodeContainer.style.display = 'none';
             qrCodeDiv.innerHTML = '';
+
+            const existingUpiLink = document.getElementById('upiPaymentLink');
+            if (existingUpiLink) existingUpiLink.remove();
         }
     });
 
@@ -60,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Check if the amount is less than 10
         if (amount < 10) {
             alert("The minimum sponsorship amount is ₹10.");
             return;
@@ -82,32 +84,34 @@ document.addEventListener('DOMContentLoaded', () => {
                 correctLevel: QRCode.CorrectLevel.H
             });
 
-            // Increase the timeout delay significantly to ensure rendering is complete
-            // Also, check if it's a canvas or img, and remove title from both parent and child
+            // Add a clickable UPI link below QR
+            const existingUpiLink = document.getElementById('upiPaymentLink');
+            if (existingUpiLink) {
+                existingUpiLink.remove();
+            }
+
+            const upiLink = document.createElement('a');
+            upiLink.href = upiUrl;
+            upiLink.id = 'upiPaymentLink';
+            upiLink.textContent = `Click here to pay using UPI App`;
+            upiLink.style.display = 'block';
+            upiLink.style.marginTop = '10px';
+            upiLink.style.color = '#007bff';
+            upiLink.style.textDecoration = 'underline';
+            upiLink.target = '_blank'; // optional
+            qrCodeContainer.appendChild(upiLink);
+
             setTimeout(() => {
-                // Try to find an img element within the qrCodeDiv
                 const qrImage = qrCodeDiv.querySelector('img');
-                if (qrImage) {
-                    qrImage.removeAttribute('title');
-                    console.log("Removed title from img tag.");
-                }
+                if (qrImage) qrImage.removeAttribute('title');
 
-                // Try to find a canvas element within the qrCodeDiv
                 const qrCanvas = qrCodeDiv.querySelector('canvas');
-                if (qrCanvas) {
-                    // QRCode.js might set the title on the canvas itself
-                    qrCanvas.removeAttribute('title');
-                    console.log("Removed title from canvas tag.");
-                }
+                if (qrCanvas) qrCanvas.removeAttribute('title');
 
-                // Sometimes the title is set on the parent container itself
-                if (qrCodeDiv.hasAttribute('title')) {
-                    qrCodeDiv.removeAttribute('title');
-                    console.log("Removed title from qrCodeDiv.");
-                }
+                if (qrCodeDiv.hasAttribute('title')) qrCodeDiv.removeAttribute('title');
+            }, 500);
 
-            }, 500); // Increased delay to 500ms - you can even try 1000ms if needed
-            paymentStatus.textContent = "Scan the QR code to make your payment.";
+            paymentStatus.textContent = "Scan the QR code or click the link below to pay.";
             paymentStatus.style.color = "#007bff";
         } else {
             paymentStatus.textContent = "QR Code library not found.";
@@ -127,14 +131,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const amount = isSponsor ? fundAmountInput.value.trim() : "#";
         const transactionId = isSponsor ? transactionIdInput.value.trim() : "#";
 
-        // Sponsor validation
         if (isSponsor) {
             if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
                 formMessage.textContent = "Please enter a valid sponsorship amount.";
                 formMessage.className = "form-message error animate-show";
                 return;
             }
-            // Check if the amount is less than 10
             if (parseFloat(amount) < 10) {
                 formMessage.textContent = "The minimum sponsorship amount is ₹10.";
                 formMessage.className = "form-message error animate-show";
@@ -147,7 +149,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Google Form URL with mapped entries
         const formURL = `https://docs.google.com/forms/d/e/1FAIpQLSdeulDHC05Ug16iyAp19MUI334OlqmlrYYt2lF1dCYFe0DtPw/formResponse` +
             `?entry.1328315084=${encodeURIComponent(projectName || "Unknown Project")}` +
             `&entry.1878610209=${encodeURIComponent(userName)}` +
@@ -170,13 +171,15 @@ document.addEventListener('DOMContentLoaded', () => {
             qrCodeContainer.style.display = 'none';
             qrCodeDiv.innerHTML = '';
 
+            const existingUpiLink = document.getElementById('upiPaymentLink');
+            if (existingUpiLink) existingUpiLink.remove();
+
         } catch (error) {
             console.error("Form submission failed:", error);
             formMessage.textContent = "Failed to submit. Please try again.";
             formMessage.className = "form-message error animate-show";
         }
 
-        // Optional: Hide the message after 5 seconds
         setTimeout(() => {
             formMessage.classList.remove("animate-show");
         }, 5000);
