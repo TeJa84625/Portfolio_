@@ -31,18 +31,44 @@ const noProjectsMessage = document.getElementById('noProjectsMessage');
 let allProjectsData = [];
 
 /**
- * Fetches all projects from the 'projects' Firestore collection.
+ * Fetches project data from 'projects' and statistics from 'statistics', then merges them.
  */
 async function fetchProjects() {
     try {
         projectListSpinnerContainer.style.display = 'flex';
-        const projectsCollection = db.collection("projects");
-        const snapshot = await projectsCollection.get();
+
+        // Fetch projects data
+        const projectsSnapshot = await db.collection("projects").get();
         const projects = [];
-        snapshot.forEach(doc => {
+        const projectIds = [];
+        projectsSnapshot.forEach(doc => {
             projects.push({ id: doc.id, ...doc.data() });
+            projectIds.push(doc.id);
         });
-        return projects;
+
+        // Fetch statistics for all projects
+        const statistics = {};
+        if (projectIds.length > 0) {
+            const statisticsPromises = projectIds.map(id => db.collection("statistics").doc(id).get());
+            const statisticsSnapshots = await Promise.all(statisticsPromises);
+            statisticsSnapshots.forEach(doc => {
+                if (doc.exists) {
+                    statistics[doc.id] = doc.data();
+                }
+            });
+        }
+
+        // Merge project data with statistics
+        const mergedProjects = projects.map(project => {
+            const stats = statistics[project.id] || { views: 0, downloads: 0 };
+            return {
+                ...project,
+                views: stats.views,
+                downloads: stats.downloads
+            };
+        });
+
+        return mergedProjects;
     } catch (error) {
         console.error("Error fetching projects: ", error);
         alert("Failed to load projects. Please check your console for details.");
@@ -195,14 +221,20 @@ function renderProjectCards(projects) {
 
         projectsGridElement.appendChild(card);
 
+        // Update the view count using the statistics collection
         card.addEventListener('click', async () => {
             try {
-                const projectRef = db.collection("projects").doc(project.id);
+                const projectRef = db.collection("statistics").doc(project.id);
                 await db.runTransaction(async (transaction) => {
                     const doc = await transaction.get(projectRef);
-                    if (!doc.exists) throw "Document does not exist!";
-                    const newViews = (doc.data().views || 0) + 1;
-                    transaction.update(projectRef, { views: newViews });
+                    if (!doc.exists) {
+                        // Create the document if it doesn't exist, initializing views to 1 and downloads to 0
+                        transaction.set(projectRef, { views: 1, downloads: 0 });
+                    } else {
+                        // Otherwise, increment the views
+                        const newViews = (doc.data().views || 0) + 1;
+                        transaction.update(projectRef, { views: newViews });
+                    }
                 });
             } catch (error) {
                 console.error(`Error incrementing views for ${project.id}:`, error);

@@ -40,13 +40,25 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchProjectDetails(id) {
         try {
             projectDetailSpinnerContainer.style.display = 'flex';
-            const docRef = db.collection("projects").doc(id);
-            const doc = await docRef.get();
+            
+            // Fetch project data and statistics concurrently
+            const projectDocPromise = db.collection("projects").doc(id).get();
+            const statsDocPromise = db.collection("statistics").doc(id).get();
 
-            if (doc.exists) {
-                currentProjectData = { id: doc.id, ...doc.data() };
+            const [projectDoc, statsDoc] = await Promise.all([projectDocPromise, statsDocPromise]);
 
-                // Use `project.title` if available; otherwise fallback to `project.id` which is the name
+            if (projectDoc.exists) {
+                const projectData = projectDoc.data();
+                const statsData = statsDoc.exists ? statsDoc.data() : { views: 0, downloads: 0 };
+                
+                // Merge project data with statistics
+                currentProjectData = { 
+                    id: projectDoc.id, 
+                    ...projectData,
+                    views: statsData.views,
+                    downloads: statsData.downloads
+                };
+
                 const projectTitle = currentProjectData.title || currentProjectData.id || 'Untitled Project';
 
                 renderProjectDetails(currentProjectData);
@@ -92,13 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${project.last_updated ? `<div><strong>Last Updated:</strong> ${project.last_updated}</div>` : ''}
             ${project.views !== undefined ? `<div><strong>Views:</strong> ${project.views}</div>` : ''}
             ${project.button_label && project.button_label.toLowerCase() !== 'none' ? `
-                    <div class="project-card-stat-item">
-                        <svg class="stat-icon" viewBox="0 0 24 24">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
-                        </svg>
-                        ${project.downloads || 0} ${project.button_label}
-                    </div>`
-                    : ''}
+                <div><strong> ${project.button_label}s :</strong> ${project.downloads || 0}</div>`: ''}
             ${project.difficulty ? `<div><strong>Difficulty:</strong> <span class="${difficultyColorClass}">${project.difficulty}</span></div>` : ''}
         </div>
 
@@ -130,28 +136,19 @@ document.addEventListener('DOMContentLoaded', () => {
         <h3>Project Details</h3>
         <p class="long-description">${project.long_description || 'No detailed description provided.'}</p>
 
-
-        ${project.video_url ? `
-            <h3>Project Video</h3>
-            <div class="video-embed">
-                <iframe src="https://www.youtube.com/embed/${getYouTubeVideoId(project.video_url)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-        ` : ''}
-
-        ${project.code ? `
-            <h3>Code Snippet</h3>
-            <div class="code-container">
-                <button id="copyCodeButton" class="copy-btn" aria-label="Copy code">📁 Copy Code</button>
-                <pre class="code-block"><code>${escapeHtml(project.code)}</code></pre>
-            </div> 
-        ` : ''}
-
         ${project.sponsors && project.sponsors.length > 0 ? `
             <div class="sponsors-section">
                 <h3>Our Sponsors</h3>
                 <div class="sponsors-list">
                     ${project.sponsors.map(sponsor => `<span class="sponsor-name">${sponsor}</span>`).join('')}
                 </div>
+            </div>
+        ` : ''}
+
+        ${project.video_url ? `
+            <h3>Project Video</h3>
+            <div class="video-embed">
+                <iframe src="https://www.youtube.com/embed/${getYouTubeVideoId(project.video_url)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         ` : ''}
 
@@ -166,13 +163,28 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         ` : ''}
 
-        <div class="action-buttons-container">
-            ${project.button_url ? `<a href="${project.button_url}" target="_blank" rel="noopener noreferrer" class="action-button" id="projectActionButton">${project.button_label || 'View Project'}</a>` : ''}
+        ${project.code ? `
+            <h3>Code Snippet</h3>
+            <div class="code-container">
+                <button id="copyCodeButton" class="copy-btn" aria-label="Copy code">📁 Copy Code</button>
+                <pre class="code-block"><code>${escapeHtml(project.code)}</code></pre>
+            </div> 
+        ` : ''}
+
+        <div class="action-buttons-container flex justify-center gap-4 mt-4 flex-wrap w-full">
+            ${project.button_url ? `
+                <a href="${project.button_url}" target="_blank" rel="noopener noreferrer"
+                class="action-button" id="projectActionButton">
+                    ${project.button_label || 'View Project'}
+                </a>` : ''}
+            
             ${normalizedStatus !== "completed" ? `
-                <a href="join_project.html?projectName=${encodeURIComponent(project.title || project.id || '')}&projectId=${encodeURIComponent(project.id)}" class="action-button join-project-button">Join This Project</a>
-            ` : ''}
+                <a href="join_project.html?projectName=${encodeURIComponent(project.title || project.id || '')}&projectId=${encodeURIComponent(project.id)}"
+                class="action-button join-project-button">
+                    Join This Project
+                </a>` : ''}
         </div>
-    `;
+        `;
 
         setupCarousel(project.image_urls);
         setupLightbox();
@@ -305,23 +317,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.open(project.button_url, '_blank');
                     return;
                 }
+                
+                // Get a reference to the statistics document
+                const statsRef = db.collection("statistics").doc(project.id);
+                const buttonLabel = project.button_label.toLowerCase();
 
-                const projectRef = db.collection("projects").doc(project.id);
                 try {
-                    if (project.button_label === "Download" || project.button_label === "Visit Website") {
-                        const docSnapshot = await projectRef.get();
-                        if (!docSnapshot.exists) {
-                            window.open(project.button_url, '_blank');
-                            return;
-                        }
-
-                        await projectRef.update({
-                            downloads: firebase.firestore.FieldValue.increment(1)
+                    // Use a transaction to safely increment the downloads counter
+                    if (buttonLabel === "download" || buttonLabel === "visit website") {
+                        await db.runTransaction(async (transaction) => {
+                            const doc = await transaction.get(statsRef);
+                            if (!doc.exists) {
+                                // If the document doesn't exist, create it with a download count of 1
+                                transaction.set(statsRef, {
+                                    downloads: 1,
+                                    views: (currentProjectData.views || 1) 
+                                });
+                            } else {
+                                 // If it exists, increment the existing downloads count
+                                const newDownloads = (doc.data().downloads || 0) + 1;
+                                transaction.update(statsRef, { downloads: newDownloads });
+                            }
                         });
                     }
                 } catch (error) {
-                    console.error(`Error incrementing stats:`, error);
+                    console.error(`Error incrementing download stats:`, error);
                 } finally {
+                    // Open the URL in a new tab after the transaction is attempted
                     window.open(project.button_url, '_blank');
                 }
             });
