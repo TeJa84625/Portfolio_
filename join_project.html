@@ -5,6 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title id="pageTitle">Join Project</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><text y=%2224%22 font-size=%2224%22>⚡</text></svg>">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter -->
@@ -32,7 +34,6 @@
 
         .qr-code-container p {
             margin-top: 0.5rem;
-            color: #6b7280;
             font-size: 0.9rem;
         }
 
@@ -67,15 +68,12 @@
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
-    <!-- Header Section (from Home Page) -->
+<body class="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-black">
     <header
-        class="bg-white shadow-md py-4 px-6 md:px-10 lg:px-16 flex justify-between items-center rounded-b-lg sticky top-0 z-50 w-full">
-        <!-- Logo -->
+        class="bg-white shadow-md py-4 px-6 md:px-10 lg:px-16 flex justify-between items-center rounded-b-lg sticky top-0 z-50 dark:bg-gray-800 dark:text-white">
         <div class="flex items-center">
             <a href="index.html"
-                class="text-2xl font-bold text-gray-800 hover:text-blue-600 transition duration-300 ease-in-out">
-                <!-- Placeholder for your logo (e.g., an SVG or text) -->
+                class="text-2xl font-bold text-gray-800 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition duration-300 ease-in-out">
                 <span class="text-blue-600">G</span>TEJA
             </a>
         </div>
@@ -83,14 +81,14 @@
 
     <!-- Main Content Wrapper -->
     <div class="flex-grow p-6 md:p-10 lg:p-16">
-        <h1 id="pageHeading" class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-8 text-center">
+        <h1 id="pageHeading" class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-8 text-center dark:text-white">
             Join <span id="projectName" class="text-blue-600 ml-2">Project</span>
         </h1>
 
-        <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto">
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-2xl mx-auto dark:bg-gray-800 dark:text-white">
             <div class="back-button-container mb-6">
                 <a href="#" id="backToProjectButton"
-                    class="inline-flex items-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-md shadow-sm transition duration-300 ease-in-out">
+                    class="inline-flex items-center bg-gray-200 hover:bg-gray-300 text-black dark:bg-gray-400 font-bold py-2 px-4 rounded-md shadow-sm transition duration-300 ease-in-out">
                     <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor"
                         xmlns="http://www.w3.org/2000/svg">
                         <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6l6 6l1.41-1.41z" />
@@ -100,58 +98,57 @@
             </div>
 
             <section class="join-form-container">
-                <h2 id="formProjectTitle" class="text-2xl font-bold text-gray-800 mb-6 text-center">Join a Project</h2>
+                <h2 id="formProjectTitle" class="text-2xl font-bold text-black dark:text-white mb-6 text-center">Join a Project</h2>
                 <form id="joinProjectForm" class="space-y-4">
                     <div>
-                        <label for="userName" class="block text-gray-700 text-sm font-bold mb-2">Your Name:</label>
+                        <label for="userName" class="block text-sm font-bold mb-2">Your Name:</label>
                         <input type="text" id="userName" name="userName" required maxlength="16"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500" />
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
                         <small class="text-gray-500 mt-1 block">*Maximum 16 characters allowed.</small>
                     </div>
 
                     <div>
-                        <label for="userEmail" class="block text-gray-700 text-sm font-bold mb-2">Your Email:</label>
+                        <label for="userEmail" class="block text-sm font-bold mb-2">Your Email:</label>
                         <input type="email" id="userEmail" name="userEmail" required
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500"/>
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"/>
                         <small class="text-gray-500 mt-2 block">*Please provide a valid email address, and we'll send you a verification email.</small>
                     </div>
 
 
                     <div>
-                        <label for="userMessage" class="block text-gray-700 text-sm font-bold mb-2">Your Message (e.g.,
+                        <label for="userMessage" class="block text-sm font-bold mb-2">Your Message (e.g.,
                             why you want to join, comment):</label>
                         <textarea id="userMessage" name="userMessage" required rows="4"
-                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500"></textarea>
+                            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"></textarea>
                     </div>
 
                     <div class="flex items-center mt-4">
                         <input type="checkbox" id="isSponsor" name="isSponsor"
                             class="form-checkbox h-5 w-5 text-blue-600 rounded" />
-                        <label for="isSponsor" class="ml-2 text-gray-700">I'd like to optionally Fund this
+                        <label for="isSponsor" class="ml-2">I'd like to optionally Fund this
                             project.</label>
                     </div>
 
-                    <div id="sponsorFields" class="bg-gray-50 p-4 rounded-lg shadow-inner mt-4" style="display: none;">
+                    <div id="sponsorFields" class="bg-gray-100 p-4 rounded-lg shadow-inner mt-4 dark:bg-gray-600" style="display: none;">
                         <div class="fund-project-section">
-                            <h3 class="text-xl font-bold text-gray-800 mb-2">Fund This Project</h3>
-                            <p class="text-gray-600 text-sm mb-4">Support this project by contributing financially.
+                            <h3 class="text-xl font-bold mb-2">Fund This Project</h3>
+                            <p class="text-sm mb-4">Support this project by contributing financially.
                                 Enter an amount and generate a UPI QR code for payment.</p>
-                            <label for="fundAmount" class="block text-gray-700 text-sm font-bold mb-2">Enter Amount
+                            <label for="fundAmount" class="block text-sm font-bold mb-2">Enter Amount
                                 (INR):</label>
                             <input type="number" id="fundAmount" placeholder="₹" min="10" step="10"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500" />
-
-                            <div class="qr-code-container" id="qrCodeContainer" style="display:none;">
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+                            <div class="qr-code-container dark:bg-gray-700" id="qrCodeContainer" style="display:none;">
                                 <div id="qrCodeDiv"></div>
                                 <p>Scan this QR code with your UPI app</p>
-                                <p>UPI ID: <a style="color: blue;"> 6301619629.wallet@phonepe</a>
+                                <p>UPI ID: <a id="upi-id" class="text-blue-700 dark:bg-blue-200 hover:underline">upi@id</a>
                                 </p>
                             </div>
-                            <label for="transactionId" class="block text-gray-700 text-sm font-bold mb-2 mt-4">UPI
+                            <label for="transactionId" class="block text-sm font-bold mb-2 mt-4">UPI
                                 Transaction ID:</label>
                             <input type="text" id="transactionId"
                                 placeholder="Enter Transaction ID after payment"
-                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500" />
+                                class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
                             <p id="paymentStatus" class="mt-4 font-bold text-center"></p>
                         </div>
                     </div>
@@ -195,8 +192,9 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script> -->
 
     <!-- Firebase and Join Project JavaScript -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
     <script src="join_project.js"></script>
     <script>
         document.addEventListener('contextmenu', e => e.preventDefault());

@@ -5,6 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title id="pageTitle">Project Details</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><text y=%2224%22 font-size=%2224%22>⚡</text></svg>">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -16,21 +18,36 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
         }
 
         #mobile-menu {
             position: fixed;
-            top: 64px; /* change 64px to your header height */
+            top: 64px;
             left: 0;
             right: 0;
             z-index: 40;
             max-height: calc(100vh - 64px);
             overflow-y: auto;
-            background-color: white; /* keep background */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-radius: 0 0 0.5rem 0.5rem; /* match your rounded-b-lg */
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 0.5rem 0.5rem;
+            padding: 1rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            #mobile-menu {
+                background-color: #1F2937;
+                color: #f9f9f9;
+            }
+            
+            #mobile-menu a {
+                color: #f9f9f9;
+            }
+            
+            #mobile-menu a:hover {
+                color: #4A90E2;
+            }
         }
 
         .loading-spinner-container-detail {
@@ -104,62 +121,68 @@
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-black">
 
-    <!-- Header -->
     <header
-        class="bg-white shadow-md py-4 px-6 md:px-10 lg:px-16 flex justify-between items-center rounded-b-lg sticky top-0 z-50">
-        <!-- Logo -->
+        class="bg-white shadow-md py-4 px-6 md:px-10 lg:px-16 flex justify-between items-center rounded-b-lg sticky top-0 z-50 dark:bg-gray-800 dark:text-white">
         <div class="flex items-center">
             <a href="index.html"
-                class="text-2xl font-bold text-gray-800 hover:text-blue-600 transition duration-300 ease-in-out">
+                class="text-2xl font-bold text-gray-800 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition duration-300 ease-in-out">
                 <span class="text-blue-600">G</span>TEJA
             </a>
         </div>
-
-        <!-- Mobile menu button -->
-        <button id="menu-btn" class="md:hidden text-gray-700 focus:outline-none" aria-label="Toggle menu">
+    
+        <!-- Mobile Menu Button -->
+        <button id="menu-btn" class="md:hidden text-gray-700 dark:text-white focus:outline-none" aria-label="Toggle menu">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
-
-        <!-- Desktop nav -->
-        <nav id="desktop-menu" class="hidden md:flex">
-            <ul class="flex space-x-4 md:space-x-8">
+    
+        <!-- Navigation -->
+        <nav id="menu" class="hidden md:flex">
+            <ul class="flex flex-col md:flex-row md:space-x-8">
                 <li><a href="index.html"
-                        class="text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md">Home</a></li>
+                        class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Home</a>
+                </li>
                 <li><a href="projects.html"
-                        class="text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md">Projects</a></li>
+                        class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Projects</a>
+                </li>
                 <li><a href="about.html"
-                        class="text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md">About</a></li>
+                        class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">About</a>
+                </li>
                 <li><a href="contact.html"
-                        class="text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md">Contact</a></li>
+                        class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Contact</a>
+                </li>
             </ul>
         </nav>
     </header>
-
-    <!-- Mobile Dropdown Menu -->
-    <nav id="mobile-menu" class="hidden bg-white shadow-md rounded-b-lg md:hidden px-6 py-4">
+    
+    <!-- Mobile Dropdown Navigation (Shown below header on mobile when open) -->
+    <nav id="mobile-menu" class="hidden bg-white shadow-md rounded-b-lg md:hidden px-6 py-4 dark:bg-gray-900">
         <ul class="flex flex-col space-y-3">
             <li><a href="index.html"
-                    class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md">Home</a></li>
+                    class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium px-3 py-2 rounded-md transition duration-300">Home</a>
+            </li>
             <li><a href="projects.html"
-                    class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md">Projects</a></li>
+                    class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium px-3 py-2 rounded-md transition duration-300">Projects</a>
+            </li>
             <li><a href="about.html"
-                    class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md">About</a></li>
+                    class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium px-3 py-2 rounded-md transition duration-300">About</a>
+            </li>
             <li><a href="contact.html"
-                    class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md">Contact</a></li>
+                    class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium px-3 py-2 rounded-md transition duration-300">Contact</a>
+            </li>
         </ul>
     </nav>
 
     <!-- Main Content -->
     <main class="p-0 sm:p-6 md:p-10 lg:p-16">
-        <div class="p-0 sm:bg-white sm:p-6 sm:rounded-lg sm:shadow-lg">
-            <div class="back-button-container mb-6">
+        <div class="p-0 sm:bg-white sm:p-6 sm:rounded-lg sm:shadow-lg dark:bg-gray-900">
+            <div class="back-button-container mb-6 ">
                 <a href="projects.html"
-                    class="inline-flex items-center bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-md shadow-sm transition duration-300 ease-in-out">
+                    class="inline-flex items-center bg-gray-200 hover:bg-gray-300 text-black font-bold py-2 px-4 rounded-md shadow-sm transition duration-300 ease-in-out dark:bg-gray-400">
                     <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6l6 6l1.41-1.41z" />
                     </svg>
@@ -167,7 +190,7 @@
                 </a>
             </div>
     
-            <section class="project-details-page" id="projectDetailsPage">
+            <section class="project-details-page dark:bg-gray-800 dark:text-gray-100" id="projectDetailsPage">
                 <div class="loading-spinner-container-detail" id="projectDetailSpinnerContainer">
                     <div class="loading-spinner-detail"></div>
                     <p class="text-gray-600 mt-2">Loading project details...</p>
@@ -175,7 +198,6 @@
             </section>
         </div>
     </main>
-
 
     <!-- Lightbox -->
     <div id="lightbox"
@@ -221,4 +243,4 @@
         });
     </script>
 </body>
-
+</html>

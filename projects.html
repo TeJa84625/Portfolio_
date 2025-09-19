@@ -5,46 +5,54 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Projects</title>
-    <!-- Tailwind CSS CDN -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><text y=%2224%22 font-size=%2224%22>⚡</text></svg>">
+
     <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- External CSS -->
     <link rel="stylesheet" href="projects.css" />
+
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            /* Light gray background */
-            color: #333;
         }
 
         #mobile-menu {
             position: fixed;
-            top: 64px; /* change 64px to your header height */
+            top: 64px;
             left: 0;
             right: 0;
             z-index: 40;
             max-height: calc(100vh - 64px);
             overflow-y: auto;
-            background-color: white; /* keep background */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-radius: 0 0 0.5rem 0.5rem; /* match your rounded-b-lg */
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 0.5rem 0.5rem;
+            padding: 1rem;
+            transition: all 0.3s ease-in-out;
         }
 
-        /* Custom styles for spinner and hidden message if not fully covered by Tailwind */
-        .loading-spinner-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 200px;
-            /* Ensure spinner is visible */
+        @media (prefers-color-scheme: dark) {
+            #mobile-menu {
+                background-color: #1F2937;
+                color: #f9f9f9;
+            }
+
+            #mobile-menu a {
+                color: #f9f9f9;
+            }
+
+            #mobile-menu a:hover {
+                color: #4A90E2;
+            }
         }
 
         .loading-spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-left-color: #3b82f6;
-            /* Blue-600 */
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -63,14 +71,11 @@
 
         .hidden-message {
             display: none;
-            /* Controlled by JavaScript */
             text-align: center;
             color: #6b7280;
-            /* Gray-500 */
             margin-top: 1rem;
         }
 
-        /* Loading Screen Style */
         #loadingScreen {
             display: none;
             position: fixed;
@@ -86,156 +91,117 @@
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col">
-    <!-- Header Section -->
-    <header
-        class="bg-white shadow-md py-4 px-6 md:px-10 lg:px-16 flex justify-between items-center rounded-b-lg sticky top-0 z-50">
-        <!-- Logo -->
+<body class="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+
+    <header class="bg-white shadow-md py-4 px-6 md:px-10 lg:px-16 flex justify-between items-center rounded-b-lg sticky top-0 z-50 dark:bg-gray-800 dark:text-white">
         <div class="flex items-center">
-            <a href="index.html"
-                class="text-2xl font-bold text-gray-800 hover:text-blue-600 transition duration-300 ease-in-out">
+            <a href="index.html" class="text-2xl font-bold text-gray-800 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 transition duration-300 ease-in-out">
                 <span class="text-blue-600">G</span>TEJA
             </a>
         </div>
 
         <!-- Mobile Menu Button -->
-        <button id="menu-btn" class="md:hidden text-gray-700 focus:outline-none" aria-label="Toggle menu">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                stroke-linejoin="round" viewBox="0 0 24 24">
+        <button id="menu-btn" class="md:hidden text-gray-700 dark:text-white focus:outline-none" aria-label="Toggle menu">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
 
-        <!-- Desktop Navigation Bar -->
-        <nav id="desktop-menu" class="hidden md:flex">
-            <ul class="flex space-x-4 md:space-x-8">
-                <li><a href="index.html"
-                        class="text-gray-700 hover:text-blue-600 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Home</a>
-                </li>
-                <li><a href="#"
-                        class="text-gray-700 hover:text-blue-600 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Projects</a>
-                </li>
-                <li><a href="about.html"
-                        class="text-gray-700 hover:text-blue-600 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">About</a>
-                </li>
-                <li><a href="contact.html"
-                        class="text-gray-700 hover:text-blue-600 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Contact</a>
-                </li>
+        <!-- Navigation -->
+        <nav id="menu" class="hidden md:flex">
+            <ul class="flex flex-col md:flex-row md:space-x-8">
+                <li><a href="index.html" class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Home</a></li>
+                <li><a href="#" class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Projects</a></li>
+                <li><a href="about.html" class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">About</a></li>
+                <li><a href="contact.html" class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium transition duration-300 ease-in-out px-3 py-2 rounded-md">Contact</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Mobile Dropdown Navigation -->
-    <nav id="mobile-menu" class="hidden bg-white shadow-md rounded-b-lg md:hidden px-6 py-4">
+    <!-- Mobile Dropdown Navigation (Shown below header on mobile when open) -->
+    <nav id="mobile-menu" class="hidden bg-white shadow-md rounded-b-lg md:hidden px-6 py-4 dark:bg-gray-900">
         <ul class="flex flex-col space-y-3">
-            <li><a href="index.html"
-                    class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition duration-300">Home</a>
-            </li>
-            <li><a href="#"
-                    class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition duration-300">Projects</a>
-            </li>
-            <li><a href="about.html"
-                    class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition duration-300">About</a>
-            </li>
-            <li><a href="contact.html"
-                    class="block text-gray-700 hover:text-blue-600 font-medium px-3 py-2 rounded-md transition duration-300">Contact</a>
-            </li>
+            <li><a href="index.html" class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium px-3 py-2 rounded-md transition duration-300">Home</a></li>
+            <li><a href="#" class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium px-3 py-2 rounded-md transition duration-300">Projects</a></li>
+            <li><a href="about.html" class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium px-3 py-2 rounded-md transition duration-300">About</a></li>
+            <li><a href="contact.html" class="block text-gray-700 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 font-medium px-3 py-2 rounded-md transition duration-300">Contact</a></li>
         </ul>
     </nav>
 
-    <!-- Main Content Wrapper -->
-    <div class="flex-grow p-6 md:p-10 lg:p-16">
-        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-8 text-center">My <span
-                class="text-blue-600">Projects</span></h1>
-
-        <div class="main-content-wrapper bg-white p-6 rounded-lg shadow-lg">
-            <!-- Filters Section -->
-            <section class="filters-section mb-8">
-                <div class="search-bar flex items-center mb-4 relative">
-                    <input type="text" id="projectSearchInput" placeholder="Search projects.."
-                        aria-label="Search projects"
-                        class="flex-grow p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10" />
-                    <button id="clearSearchButton" class="absolute right-3 text-gray-500 hover:text-gray-700 font-bold"
-                        style="display: none;">X</button>
-                </div>
-
-                <div class="filters-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                    <div class="filter-group flex flex-col">
-                        <label for="technologyFilter" class="mb-1 text-gray-700 font-medium">Technology:</label>
-                        <select id="technologyFilter"
-                            class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">All Technologies</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group flex flex-col">
-                        <label for="tagsFilter" class="mb-1 text-gray-700 font-medium">Tag:</label>
-                        <select id="tagsFilter"
-                            class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">All Tags</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group flex flex-col">
-                        <label for="statusFilter" class="mb-1 text-gray-700 font-medium">Status:</label>
-                        <select id="statusFilter"
-                            class="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="">All Statuses</option>
-                            <option value="ongoing">Ongoing</option>
-                            <option value="completed">Completed</option>
-                            <option value="upcoming">Upcoming</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group flex flex-col">
-                        <label for="statusFilter" class="mb-1 text-gray-700 font-medium">Sort By:</label>
-                        <select id="sortFilter">
-                            <option value="">All</option>
-                            <option value="name_asc">Name (A-Z)</option>
-                            <option value="date_desc">Newest First</option>
-                            <option value="date_asc">Oldest First</option>
-                            <option value="views_desc">Most Views</option>
-                            <option value="views_asc">Least Views</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="flex justify-end">
-                    <button id="clearFiltersButton"
-                        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-md shadow-sm transition duration-300 ease-in-out">Clear
-                        Filters</button>
-                </div>
-            </section>
-
-            <!-- Projects Section -->
-            <section class="projects-section">
-                <div class="loading-spinner-container" id="projectListSpinnerContainer">
-                    <div class="loading-spinner"></div>
-                    <p class="text-gray-600 mt-2">Loading projects...</p>
-                </div>
-                <div class="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="projectsGrid">
-                    <!-- Project cards will be injected here by JavaScript -->
-                </div>
-                <p id="noProjectsMessage" class="hidden-message text-lg">No projects match your current filters.</p>
-            </section>
-        </div>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex flex-col justify-center items-center text-white text-2xl font-semibold">
+        Loading Project...
+        <div class="loading-spinner mt-4"></div>
     </div>
 
-    <!-- Footer Section (Optional) -->
+    <!-- Main Content -->
+    <main class="flex-grow p-6 md:p-10 lg:p-16">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-8 text-center">My <span class="text-blue-600">Projects</span></h1>
+
+        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <!-- Filters -->
+            <section class="mb-8">
+                <div class="mb-4 relative">
+                    <input id="projectSearchInput" type="text" placeholder="Search projects.." class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" />
+                    <button id="clearSearchButton" class="absolute right-3 top-3 text-gray-500 hover:text-gray-700 dark:text-gray-300" style="display:none;">X</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                    <select id="technologyFilter" class="p-3 border rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">All Technologies</option>
+                    </select>
+
+                    <select id="tagsFilter" class="p-3 border rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">All Tags</option>
+                    </select>
+
+                    <select id="statusFilter" class="p-3 border rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">All Statuses</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
+                        <option value="upcoming">Upcoming</option>
+                    </select>
+
+                    <select id="sortFilter" class="p-3 border rounded-md focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        <option value="">All</option>
+                        <option value="name_asc">Name (A-Z)</option>
+                        <option value="date_desc">Newest First</option>
+                        <option value="date_asc">Oldest First</option>
+                        <option value="views_desc">Most Views</option>
+                        <option value="views_asc">Least Views</option>
+                    </select>
+                </div>
+
+                <div class="text-right">
+                    <button id="clearFiltersButton" class="bg-gray-200 hover:bg-gray-300 text-gray-800 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white font-semibold py-2 px-4 rounded transition">
+                        Clear Filters
+                    </button>
+                </div>
+            </section>
+
+            <!-- Projects -->
+            <section>
+                <div id="projectListSpinnerContainer" class="loading-spinner-container flex flex-col items-center justify-center min-h-[200px]">
+                    <div class="loading-spinner"></div>
+                    <p class="text-gray-600 dark:text-gray-400 mt-2">Loading projects...</p>
+                </div>
+                <div id="projectsGrid" class="projects-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                    <!-- Project cards will be injected here by JavaScript -->
+                </div>
+                <p id="noProjectsMessage" class="hidden-message text-lg dark:text-gray-400 mt-4 text-center">No projects match your current filters.</p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
     <footer class="bg-gray-800 text-white text-center py-4 mt-auto rounded-t-lg">
         <p>&copy; <span id="year"></span> G TEJA. All rights reserved.</p>
-        
         <script>
             document.getElementById('year').textContent = new Date().getFullYear();
         </script>
     </footer>
 
-    <!-- Loading Screen -->
-    <div id="loadingScreen">
-        <div class="text-white text-2xl font-semibold">Loading Project...</div>
-        <div class="loading-spinner mt-4"></div>
-    </div>
-
-    <!-- Firebase and Projects JavaScript -->
+    <!-- Firebase and Project scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="projects.js"></script>
@@ -243,11 +209,11 @@
     <!-- Mobile menu toggle script -->
     <script>
         document.addEventListener('contextmenu', e => e.preventDefault());
-            document.addEventListener('keydown', e => {
-                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J'].includes(e.key.toUpperCase()))) {
-                    e.preventDefault();
-                }
-            });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && ['I', 'J'].includes(e.key.toUpperCase()))) {
+                e.preventDefault();
+            }
+        });
 
         const btn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -256,30 +222,33 @@
             mobileMenu.classList.toggle('hidden');
         });
 
-        // Optional: Close mobile menu when clicking outside (nice UX)
+        // Close mobile menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!btn.contains(e.target) && !mobileMenu.contains(e.target)) {
                 mobileMenu.classList.add('hidden');
             }
         });
 
-        // Your existing project click loading screen handler (keep it)
-        document.addEventListener('DOMContentLoaded', function () {
+        // Project click loading screen handler
+        document.addEventListener('DOMContentLoaded', () => {
             const projectsGrid = document.getElementById('projectsGrid');
+            const loadingScreen = document.getElementById('loadingScreen');  // Get the loading screen element
 
-            projectsGrid.addEventListener('click', function (event) {
-                const clickedElement = event.target.closest('.project-card');
-
+            // Add click event listener to the projects grid
+            projectsGrid.addEventListener('click', event => {
+                const clickedElement = event.target.closest('.project-card'); // Find the closest project card
                 if (clickedElement) {
-                    const loadingScreen = document.getElementById('loadingScreen');
-                    loadingScreen.style.display = 'flex';
+                    // Show the loading screen when a project is clicked
+                    loadingScreen.classList.remove('hidden');
 
-                    setTimeout(function () {
-                        loadingScreen.style.display = 'none';
-                        // Navigate or do other actions here
-                    }, 2000);
+                    // Simulate a delay (e.g., 5 seconds) before hiding the loading screen
+                    setTimeout(() => {
+                        loadingScreen.classList.add('hidden');
+                    }, 5000); // 5000ms = 5 seconds, adjust as needed
                 }
             });
         });
     </script>
 </body>
+
+</html>

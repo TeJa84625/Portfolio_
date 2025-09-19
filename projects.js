@@ -180,7 +180,7 @@ function renderProjectCards(projects) {
         const imageUrl = (project.image_urls && project.image_urls.length > 0) ? project.image_urls[0] : null;
         const imageHtml = imageUrl
             ? `<img src="${imageUrl}" alt="${project.id} thumbnail" class="project-card-image" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/333333?text=Image+Not+Found';" />`
-            : `<div class="project-card-image-fallback">${project.id}</div>`;
+            : `<div class="project-card-image-fallback dark:bg-gray-700 dark:text-gray-100">${project.id}</div>`;
 
         const downloadsCount = project.downloads !== undefined ? project.downloads : 0;
         const buttonLabel = project.button_label || 'Downloads';
@@ -201,17 +201,17 @@ function renderProjectCards(projects) {
             <div class="project-card-image-container">
                 ${imageHtml}
             </div>
-            <div class="project-card-content">
-                <h3 class="project-card-title">${project.id}</h3>
-                <div class="project-card-stats">
+            <div class="project-card-content dark:bg-gray-800">
+                <h3 class="project-card-title ">${project.id}</h3>
+                <div class="project-card-stats ">
                     <div class="project-card-stat-item">
-                        <svg class="stat-icon" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 0 12c2.73 4.39 7 7.5 12 7.5s9.27-3.11 12-7.5c-2.73-4.39-7-7.5-12-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        <svg class="stat-icon dark:fill-white" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 0 12c2.73 4.39 7 7.5 12 7.5s9.27-3.11 12-7.5c-2.73-4.39-7-7.5-12-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
                         ${project.views !== undefined ? project.views : 0} Views
                     </div>
                     ${
                         buttonLabel.toLowerCase() !== 'none' ? `
                         <div class="project-card-stat-item">
-                            <svg class="stat-icon" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            <svg class="stat-icon dark:fill-white" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                             ${downloadsCount} ${buttonLabel}
                         </div>` : ''
                     }

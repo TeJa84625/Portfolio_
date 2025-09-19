@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         projectDetailsPage.innerHTML = `
-        <h2 class="text-blue-600 font-bold text-6xl mb-6 mt-0 text-center w-full">${ project.id || 'Untitled Project'}</h2>
+        <h2 class="text-blue-600 dark:text-blue-800 font-bold text-6xl mb-6 mt-0 text-center w-full">${ project.id || 'Untitled Project'}</h2>
         <div class="meta-info">
             ${project.client ? `<div><strong>Client:</strong> ${project.client}</div>` : ''}
             ${project.date ? `<div><strong>Date:</strong> ${project.date}</div>` : ''}
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         <div class="tags">
-            <h3 class="text-gray-700 border-b-2 border-gray-200 pb-2 mt-9 mb-5 text-2xl w-full">Tags:</h3>
+            <h3>Tags:</h3>
             ${project.tags && project.tags.length > 0 ? project.tags.map(tag => `<span>${tag}</span>`).join('') : '<p>No tags available.</p>'}
         </div>
 
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
 
         ${project.image_urls && project.image_urls.length > 0 ? `
-            <h3>Project Images</h3>
+            <h3 class="border-b-2 border-[#e0e0e0] pb-[10px] mt-[35px] mb-[20px] w-full text-[1.8em]">Project Images</h3>
             <div class="image-carousel-container">
                 <div class="image-carousel" id="imageCarousel">
                     ${project.image_urls.map(image => `<img src="${image}" alt="Project Image" class="carousel-image">`).join('')}
@@ -131,14 +131,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         ` : ''}
 
-        <h3>Project Overview</h3>
+        <h3 class="border-b-2 border-[#e0e0e0] pb-[10px] mt-[35px] mb-[20px] w-full text-[1.8em]">Project Overview</h3>
         <p class="short-description">${project.short_description || 'No short description provided.'}</p>
-        <h3>Project Details</h3>
+        <h3 class="border-b-2 border-[#e0e0e0] pb-[10px] mt-[35px] mb-[20px] w-full text-[1.8em]">Project Details</h3>
         <p class="long-description">${project.long_description || 'No detailed description provided.'}</p>
 
         ${project.sponsors && project.sponsors.length > 0 ? `
             <div class="sponsors-section">
-                <h3>Our Sponsors</h3>
+                <h3 class="border-b-2 border-[#e0e0e0] pb-[10px] mt-[35px] mb-[20px] w-full text-[1.8em]">Our Sponsors</h3>
                 <div class="sponsors-list">
                     ${project.sponsors.map(sponsor => `<span class="sponsor-name">${sponsor}</span>`).join('')}
                 </div>
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ` : ''}
 
         ${project.video_url ? `
-            <h3>Project Video</h3>
+            <h3 class="border-b-2 border-[#e0e0e0] pb-[10px] mt-[35px] mb-[20px] w-full text-[1.8em]">Project Video</h3>
             <div class="video-embed">
                 <iframe src="https://www.youtube.com/embed/${getYouTubeVideoId(project.video_url)}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ${project.members && project.members.length > 0 ? `
             <div class="members-section">
-                <h3>Team Members</h3>
+                <h3 class="border-b-2 border-[#e0e0e0] pb-[10px] mt-[35px] mb-[20px] w-full text-[1.8em]">Team Members</h3>
                 <div class="members-scroll-container">
                     <div class="members-list">
                         ${project.members.map(member => `<span class="member-name">${member}</span>`).join('')}
@@ -164,8 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ` : ''}
 
         ${project.code ? `
-            <h3>Code Snippet</h3>
-            <div class="code-container">
+            <h3 class="border-b-2 border-[#e0e0e0] pb-[10px] mt-[35px] mb-[20px] w-full text-[1.8em]">Code Snippet</h3>
+            <div class="code-container bg-[#2d2d2d]">
                 <button id="copyCodeButton" class="copy-btn" aria-label="Copy code">📁 Copy Code</button>
                 <pre class="code-block"><code>${escapeHtml(project.code)}</code></pre>
             </div> 

@@ -53,7 +53,6 @@ body {
 
 /* Project Details Section (similar to previous project-details CSS) */
 .project-details-page {
-    background-color: #ffffff;
     border-radius: 15px;
     /* More rounded */
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0);
@@ -70,20 +69,6 @@ body {
     align-items: flex-start;
     min-height: 600px;
     /* Ensure sufficient height */
-}
-
-.project-details-page h3 {
-    color: #495057;
-    border-bottom: 2px solid #e0e0e0;
-    /* Thicker border */
-    padding-bottom: 10px;
-    /* More padding */
-    margin-top: 35px;
-    /* More margin */
-    margin-bottom: 20px;
-    width: 100%;
-    font-size: 1.8em;
-    /* Larger heading */
 }
 
 .project-details-page p {
@@ -109,12 +94,6 @@ body {
 .project-details-page .long-description {
     font-size: 1.1em;
     word-wrap: break-word;
-}
-
-
-.project-details-page strong {
-    color: #444;
-    /* Darker strong */
 }
 
 .project-details-page .meta-info {
@@ -162,8 +141,6 @@ body {
     margin-top: 0;
     margin-bottom: 0;
     font-size: 1.2em;
-    /* Make heading smaller here */
-    color: #333;
     /* Darker color for heading */
     width: auto;
     /* Allow h3 to take only necessary width */
@@ -294,7 +271,6 @@ body {
 }
 
 .sponsors-section h3 {
-    color: #495057;
     border-bottom: none;
     padding-bottom: 0;
     margin-top: 0;
@@ -334,7 +310,6 @@ body {
 }
 
 .members-section h3 {
-    color: #495057;
     border-bottom: none;
     padding-bottom: 0;
     margin-top: 0;
@@ -670,7 +645,6 @@ body {
     max-height: 150vh;
     margin-top: 40px;
     margin-bottom: 20px;
-    background-color: #000000d2;
     padding-left: 10px;
     padding-bottom: 5px;
     padding-top: 30px;
