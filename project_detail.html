@@ -7,11 +7,7 @@
     <title id="pageTitle">Project Details</title>
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><text y=%2224%22 font-size=%2224%22>⚡</text></svg>">
-
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Google Fonts - Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="project_detail.css" />
 
@@ -132,7 +128,6 @@
             </a>
         </div>
     
-        <!-- Mobile Menu Button -->
         <button id="menu-btn" class="md:hidden text-gray-700 dark:text-white focus:outline-none" aria-label="Toggle menu">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                 stroke-linejoin="round" viewBox="0 0 24 24">
@@ -140,7 +135,6 @@
             </svg>
         </button>
     
-        <!-- Navigation -->
         <nav id="menu" class="hidden md:flex">
             <ul class="flex flex-col md:flex-row md:space-x-8">
                 <li><a href="index.html"
@@ -159,7 +153,6 @@
         </nav>
     </header>
     
-    <!-- Mobile Dropdown Navigation (Shown below header on mobile when open) -->
     <nav id="mobile-menu" class="hidden bg-white shadow-md rounded-b-lg md:hidden px-6 py-4 dark:bg-gray-900">
         <ul class="flex flex-col space-y-3">
             <li><a href="index.html"
@@ -177,7 +170,6 @@
         </ul>
     </nav>
 
-    <!-- Main Content -->
     <main class="p-0 sm:p-6 md:p-10 lg:p-16">
         <div class="p-0 sm:bg-white sm:p-6 sm:rounded-lg sm:shadow-lg dark:bg-gray-900">
             <div class="back-button-container mb-6 ">
@@ -199,14 +191,12 @@
         </div>
     </main>
 
-    <!-- Lightbox -->
     <div id="lightbox"
         class="lightbox fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 hidden">
         <span class="lightbox-close absolute top-4 right-6 text-white text-5xl font-bold cursor-pointer">&times;</span>
         <img class="lightbox-content max-w-full max-h-[80vh] rounded-lg" id="lightboxImage" />
     </div>
 
-    <!-- Footer -->
     <footer class="bg-gray-800 text-white text-center py-4 mt-auto rounded-t-lg">
         <p>&copy; <span id="year"></span> G TEJA. All rights reserved.</p>
         
@@ -215,12 +205,10 @@
         </script>
     </footer>
 
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
     <script src="project_detail.js"></script>
 
-    <!-- Mobile Menu Script -->
     <script>
         document.addEventListener('contextmenu', e => e.preventDefault());
             document.addEventListener('keydown', e => {

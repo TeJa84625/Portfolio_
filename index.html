@@ -6,14 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>G TEJA</title>
   <link rel="icon"href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22><text y=%2224%22 font-size=%2224%22>⚡</text></svg>">
-  
-  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Google Fonts - Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
-  <!-- model-viewer component -->
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
   
   <style>
@@ -31,7 +25,6 @@
     #mobile-menu {
       position: fixed;
       top: 64px;
-      /* header height */
       left: 0;
       right: 0;
       z-index: 40;
@@ -63,7 +56,7 @@
 </head>
 
 <body class="min-h-screen flex flex-col bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
-  <!-- Header Section -->
+
   <header
     class="bg-white shadow-md py-4 px-6 md:px-10 lg:px-16 flex justify-between items-center rounded-b-lg sticky top-0 z-50 dark:bg-gray-800 dark:text-white">
     <div class="flex items-center">
@@ -73,7 +66,6 @@
       </a>
     </div>
 
-    <!-- Mobile Menu Button -->
     <button id="menu-btn" class="md:hidden text-gray-700 dark:text-white focus:outline-none" aria-label="Toggle menu">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
         stroke-linejoin="round" viewBox="0 0 24 24">
@@ -81,7 +73,6 @@
       </svg>
     </button>
 
-    <!-- Navigation -->
     <nav id="menu" class="hidden md:flex">
       <ul class="flex flex-col md:flex-row md:space-x-8">
         <li><a href="#"
@@ -100,7 +91,6 @@
     </nav>
   </header>
 
-  <!-- Mobile Dropdown Navigation (Shown below header on mobile when open) -->
   <nav id="mobile-menu" class="hidden bg-white shadow-md rounded-b-lg md:hidden px-6 py-4 dark:bg-gray-900">
     <ul class="flex flex-col space-y-3">
       <li><a href="#"
@@ -118,13 +108,10 @@
     </ul>
   </nav>
 
-  <!-- Main Content Section -->
   <main class="flex-grow flex flex-col items-center justify-center p-6 space-y-16 max-w-7xl mx-auto w-full">
 
-    <!-- Hero Section -->
     <div
       class="flex flex-col md:flex-row items-center justify-between bg-white p-8 rounded-lg shadow-lg max-w-6xl w-full gap-8 dark:bg-gray-800 dark:text-white">
-      <!-- Left: Text Content -->
       <div class="text-center md:text-left md:w-1/2">
         <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 leading-tight">
           Welcome to My <span class="text-blue-600">Professional Portfolio</span>
@@ -138,7 +125,6 @@
         </a>
       </div>
 
-      <!-- Right: 3D Model Viewer -->
       <div class="w-full md:w-1/2 h-72 md:h-96"> <model-viewer
           src="https://teja84625.github.io/3d-models/earth_cartoon.glb" alt="A 3D model of an Earth" auto-rotate
           camera-controls shadow-intensity="0" class="w-full h-full rounded-lg" loading="eager" reveal="auto"
@@ -147,16 +133,14 @@
 
     </div>
 
-    <!-- Personal Quote Section -->
     <section class="bg-white p-5 rounded-lg shadow-lg max-w-6xl w-full relative dark:bg-gray-800 dark:text-white">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">My Quote</h2>
 
-      <!-- Decorative Quotation Mark -->
       <div class="text-6xl text-blue-200 absolute top-4 left-6 select-none pointer-events-none">“</div>
 
       <div class="relative max-w-3xl mx-auto">
         <blockquote class="text-center text-xl italic text-gray-700 dark:text-gray-300 z-10">
-          “ Even the most powerful explosions begin with a small ignition. ”
+          “ Even the most powerful explosion begin with a small ignition. ”
         </blockquote>
         <div class="mt-4 text-base font-semibold text-gray-500 text-right dark:text-gray-400">
           ~ Teja
@@ -164,7 +148,6 @@
       </div>
     </section>
 
-    <!-- About Me Section -->
     <section class="bg-white p-10 rounded-lg shadow-lg max-w-6xl w-full dark:bg-gray-800 dark:text-white">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-6 text-center">About Me</h2>
       <p class="text-gray-700 dark:text-gray-300 leading-relaxed max-w-4xl mx-auto text-justify">
@@ -178,7 +161,6 @@
         about emerging tech trends, or experimenting with new tools and frameworks.
       </p>
 
-      <!-- Read More Button -->
       <div class="text-center mt-6">
         <a href="about.html"
           class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded transition duration-300">
@@ -187,7 +169,6 @@
       </div>
     </section>
 
-    <!-- Contact Call-to-Action Section -->
     <section class="bg-blue-600 text-white p-12 rounded-lg shadow-lg max-w-6xl w-full text-center">
       <h2 class="text-4xl font-bold mb-4">Interested in Working Together?</h2>
       <p class="mb-8 max-w-3xl mx-auto text-lg leading-relaxed">
@@ -202,7 +183,6 @@
 
   </main>
 
-  <!-- Footer Section -->
   <footer class="bg-gray-800 text-white text-center py-6 mt-auto rounded-t-lg">
     <p>&copy; <span id="year"></span> G TEJA. All rights reserved.</p>
 
