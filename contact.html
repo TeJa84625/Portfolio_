@@ -245,6 +245,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
     <script>
+        let formURLTemplate = null;
+
         const firebaseConfig = {
             apiKey: "AIzaSyBWoqHihUtSWubkoOTzykbxjtuiIFfgDWg",
             authDomain: "portfolio-baf28.firebaseapp.com",
@@ -262,6 +264,7 @@
         db.collection('about').doc('teja').get().then((doc) => {
             if (doc.exists) {
                 const email = doc.data().email;
+                formURLTemplate = doc.data().form;
                 if (email) {
                     const emailLink = document.querySelector('.email-link');
                     if (emailLink) {
@@ -276,8 +279,7 @@
             console.error('Error getting document:', error);
         });
     </script>
-
-
+    
     <script>
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -293,66 +295,43 @@
             mobileMenu.classList.toggle('hidden');
         });
     </script>
-
+    
     <script>
-
-        function showModal(type, title, message) {
-                const modal = document.getElementById('modalContainer');
-                const modalTitle = document.getElementById('modalTitle');
-                const modalMessage = document.getElementById('modalMessage');
-
-                modalTitle.textContent = title;
-                modalMessage.textContent = message;
-
-                if (type === 'success') {
-                    modalTitle.classList.add('text-green-600');
-                    modalTitle.classList.remove('text-red-600');
-                } else if (type === 'error') {
-                    modalTitle.classList.add('text-red-600');
-                    modalTitle.classList.remove('text-green-600');
-                } else {
-                    modalTitle.classList.remove('text-green-600', 'text-red-600');
-                }
-
-                modal.classList.remove("hidden");
-            }
-
-            function closeModal() {
-                const modal = document.getElementById('modalContainer');
-                modal.classList.add("hidden");
-            }
-
         document.getElementById('contactForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
-            const form = event.target;
-            const userName = form.querySelector('#name').value;
-            const userEmail = form.querySelector('#email').value;
-            const userMessage = form.querySelector('#message').value;
+            const formElement = event.target;
+            const userName = formElement.querySelector('#name').value;
+            const userEmail = formElement.querySelector('#email').value;
+            const userMessage = formElement.querySelector('#message').value;
             const projectName = 'query';
             const amount = '-';
             const transactionId = '-';
 
-            const formURL = `https://docs.google.com/forms/d/e/1FAIpQLSdeulDHC05Ug16iyAp19MUI334OlqmlrYYt2lF1dCYFe0DtPw/formResponse` +
-                `?entry.1878610209=${encodeURIComponent(userName)}` +
-                `&entry.1587908217=${encodeURIComponent(userEmail)}` +
-                `&entry.1876828639=${encodeURIComponent(userMessage)}` +
-                `&entry.1328315084=${encodeURIComponent(projectName)}` +
-                `&entry.1057306725=${encodeURIComponent(amount)}` +
-                `&entry.1746085745=${encodeURIComponent(transactionId)}`;
+            if (formURLTemplate) {
+                const formURL = formURLTemplate
+                    .replace("(projectName)", encodeURIComponent(projectName))
+                    .replace("(userName)", encodeURIComponent(userName))
+                    .replace("(userEmail)", encodeURIComponent(userEmail))
+                    .replace("(userMessage)", encodeURIComponent(userMessage))
+                    .replace("(amount)", encodeURIComponent(amount))
+                    .replace("(transactionId)", encodeURIComponent(transactionId));
 
-            fetch(formURL, {
-                method: 'POST',
-                mode: 'no-cors'
-            })
-                .then(() => {
-                    alert('Your message has been sent successfully! Thank you for reaching out.');
-                    form.reset();
+                fetch(formURL, {
+                    method: 'POST',
+                    mode: 'no-cors'
                 })
-                .catch(error => {
-                    console.error('Error submitting form:', error);
-                    alert('There was an error sending your message. Please try again or contact me directly via email.');
-                });
+                    .then(() => {
+                        alert('success', 'Success!', 'Your message has been sent successfully! Thank you for reaching out.');
+                        formElement.reset();
+                    })
+                    .catch(error => {
+                        console.error('Error submitting form:', error);
+                        alert('error', 'Error!', 'There was an error sending your message. Please try again or contact me directly via email.');
+                    });
+            } else {
+                console.error('Form URL template is not available');
+            }
         });
     </script>
 

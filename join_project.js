@@ -1,4 +1,3 @@
-// ... Firebase initialization (keep this part as-is) ...
 const firebaseConfig = {
     apiKey: "AIzaSyBWoqHihUtSWubkoOTzykbxjtuiIFfgDWg",
     authDomain: "portfolio-baf28.firebaseapp.com",
@@ -14,10 +13,12 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let yourUpiId = null;
+let formURLTemplate = null;
 
 db.collection('about').doc('teja').get().then((doc) => {
     if (doc.exists) {
         yourUpiId = doc.data().upi;
+        formURLTemplate = doc.data().form;
     } else {
         console.warn('No such document!');
     }
@@ -157,31 +158,34 @@ function generateUpiPaymentQr(amount) {
         }
     }
 
-    const formURL = `https://docs.google.com/forms/d/e/1FAIpQLSdeulDHC05Ug16iyAp19MUI334OlqmlrYYt2lF1dCYFe0DtPw/formResponse` +
-        `?entry.1328315084=${encodeURIComponent(projectName)}` +
-        `&entry.1878610209=${encodeURIComponent(userName)}` +
-        `&entry.1587908217=${encodeURIComponent(userEmail)}` +
-        `&entry.1876828639=${encodeURIComponent(userMessage)}` +
-        `&entry.1057306725=${encodeURIComponent(amount)}` +
-        `&entry.1746085745=${encodeURIComponent(transactionId)}`;
+    if (formURLTemplate) {
+        const formURL = formURLTemplate
+            .replace("(projectName)", encodeURIComponent(projectName))
+            .replace("(userName)", encodeURIComponent(userName))
+            .replace("(userEmail)", encodeURIComponent(userEmail))
+            .replace("(userMessage)", encodeURIComponent(userMessage))
+            .replace("(amount)", encodeURIComponent(amount))
+            .replace("(transactionId)", encodeURIComponent(transactionId));
+        try {
+            await fetch(formURL, {
+                method: 'POST',
+                mode: 'no-cors'
+            });
 
-    try {
-        await fetch(formURL, {
-            method: 'POST',
-            mode: 'no-cors'
-        });
+            joinProjectForm.reset();
+            sponsorFieldsDiv.style.display = 'none';
+            qrCodeContainer.style.display = 'none';
+            qrCodeDiv.innerHTML = '';
+            const existingBtn = document.getElementById('upiPaymentBtn');
+            if (existingBtn) existingBtn.remove();
 
-        joinProjectForm.reset();
-        sponsorFieldsDiv.style.display = 'none';
-        qrCodeContainer.style.display = 'none';
-        qrCodeDiv.innerHTML = '';
-        const existingBtn = document.getElementById('upiPaymentBtn');
-        if (existingBtn) existingBtn.remove();
-
-        showThankYouModal(isSponsor, projectName);
-    } catch (error) {
-        console.error("Form submission failed:", error);
-        alert("Failed to submit. Please try again.");
+            showThankYouModal(isSponsor, projectName);
+        } catch (error) {
+            console.error("Form submission failed:", error);
+            alert("Failed to submit. Please try again.");
+        }
+    } else {
+        console.error('Form URL template is not available');
     }
 });
 
@@ -215,7 +219,6 @@ function generateUpiPaymentQr(amount) {
     setTimeout(() => {
         modal.classList.add('hidden');
 
-        // Stop confetti on modal close just in case
         if (typeof $ !== 'undefined' && $.confetti) {
             $.confetti.stop();
         }
