@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             projectDetailSpinnerContainer.style.display = 'flex';
             
-            // Fetch project data and statistics concurrently
             const projectDocPromise = db.collection("projects").doc(id).get();
             const statsDocPromise = db.collection("statistics").doc(id).get();
 
@@ -51,7 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const projectData = projectDoc.data();
                 const statsData = statsDoc.exists ? statsDoc.data() : { views: 0, downloads: 0 };
                 
-                // Merge project data with statistics
                 currentProjectData = { 
                     id: projectDoc.id, 
                     ...projectData,
@@ -59,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     downloads: statsData.downloads
                 };
 
-                const projectTitle = currentProjectData.title || currentProjectData.id || 'Untitled Project';
+                const projectTitle = `Teja Gavara | ${currentProjectData.title || currentProjectData.id || 'Untitled Project'}`;
 
                 renderProjectDetails(currentProjectData);
 
