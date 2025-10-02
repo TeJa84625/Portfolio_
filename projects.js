@@ -27,6 +27,7 @@ const statusFilter = document.getElementById('statusFilter');
 const sortFilter = document.getElementById('sortFilter');
 const clearFiltersButton = document.getElementById('clearFiltersButton');
 const noProjectsMessage = document.getElementById('noProjectsMessage');
+const loadingScreen = document.getElementById('loadingScreen');
 
 let allProjectsData = [];
 
@@ -165,7 +166,7 @@ function filterProjects() {
 }
 
 /**
- * Renders project cards.
+ * Renders project cards with correct UI structure.
  */
 function renderProjectCards(projects) {
     projectsGridElement.innerHTML = '';
@@ -174,47 +175,73 @@ function renderProjectCards(projects) {
 
     projects.forEach(project => {
         const card = document.createElement('div');
-        card.classList.add('project-card');
+        // RE-ADDED UI CLASSES for the card container
+        card.classList.add('bg-white', 'dark:bg-gray-800', 'rounded-lg', 'shadow-xl', 'overflow-hidden', 'transform', 'hover:scale-[1.02]', 'transition', 'duration-300', 'ease-in-out', 'relative', 'cursor-pointer');
         card.dataset.projectId = project.id;
 
         const imageUrl = (project.image_urls && project.image_urls.length > 0) ? project.image_urls[0] : null;
         const imageHtml = imageUrl
-            ? `<img src="${imageUrl}" alt="${project.id} thumbnail" class="project-card-image" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/333333?text=Image+Not+Found';" />`
-            : `<div class="project-card-image-fallback dark:bg-gray-700 dark:text-gray-100">${project.id}</div>`;
+            ? `<img src="${imageUrl}" alt="${project.id} thumbnail" class="w-full h-48 object-cover" onerror="this.onerror=null;this.src='https://placehold.co/400x250/cccccc/333333?text=Image+Not+Found';" />`
+            : `<div class="w-full h-48 flex items-center justify-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 text-gray-500 font-bold text-xl">${project.id}</div>`; // Fallback with Tailwind classes
 
         const downloadsCount = project.downloads !== undefined ? project.downloads : 0;
         const buttonLabel = project.button_label || 'Downloads';
 
         const projectStatus = (project.project_status || 'unknown').toLowerCase();
         let statusBadgeClass = '';
+        let statusText = project.project_status || 'Status N/A';
         switch (projectStatus) {
-            case 'ongoing': statusBadgeClass = 'status-ongoing'; break;
-            case 'completed': statusBadgeClass = 'status-completed'; break;
-            case 'upcoming': statusBadgeClass = 'status-upcoming'; break;
-            default: statusBadgeClass = 'status-unknown';
+            case 'ongoing':
+                statusBadgeClass = 'bg-yellow-500 text-yellow-900';
+                break;
+            case 'completed':
+                statusBadgeClass = 'bg-green-500 text-green-900';
+                break;
+            case 'upcoming':
+                statusBadgeClass = 'bg-blue-500 text-blue-900';
+                break;
+            default:
+                statusBadgeClass = 'bg-gray-400 text-gray-800';
+                statusText = 'N/A';
         }
 
+        // Rebuilt card HTML string with Tailwind classes
         card.innerHTML = `
-            <div class="project-status-badge ${statusBadgeClass}">
-                ${project.project_status || 'Status N/A'}
-            </div>
-            <div class="project-card-image-container">
-                ${imageHtml}
-            </div>
-            <div class="project-card-content dark:bg-gray-800">
-                <h3 class="project-card-title ">${project.id}</h3>
-                <div class="project-card-stats ">
-                    <div class="project-card-stat-item">
-                        <svg class="stat-icon dark:fill-white" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 0 12c2.73 4.39 7 7.5 12 7.5s9.27-3.11 12-7.5c-2.73-4.39-7-7.5-12-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                        ${project.views !== undefined ? project.views : 0} Views
+            <div class="rounded-lg overflow-hidden shadow-lg bg-white dark:bg-gray-800">
+                <div class="relative">
+                    ${imageHtml}
+
+                    <div class="absolute top-2 right-2 px-3 py-1 text-xs font-semibold rounded-full shadow-md ${statusBadgeClass} z-10">
+                        ${statusText}
                     </div>
-                    ${
-                        buttonLabel.toLowerCase() !== 'none' ? `
-                        <div class="project-card-stat-item">
-                            <svg class="stat-icon dark:fill-white" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                            ${downloadsCount} ${buttonLabel}
-                        </div>` : ''
-                    }
+                </div>
+
+                <div class="p-4">
+                    <h3 class="text-xl font-bold mb-2 truncate text-gray-900 dark:text-white">
+                    ${project.id}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                        ${project.short_description || 'No description provided.'}
+                    </p>
+                    <div class="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+
+                        <div class="flex items-center space-x-1">
+                            <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 0 12c2.73 4.39 7 7.5 12 7.5s9.27-3.11 12-7.5c-2.73-4.39-7-7.5-12-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                            <span>${project.views !== undefined ? project.views : 0} Views</span>
+                        </div>
+
+                        ${
+                            buttonLabel.toLowerCase() !== 'none' ? `
+                            <div class="flex items-center space-x-1">
+                                <svg class="w-4 h-4 text-blue-500 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                </svg>
+                                <span>${downloadsCount} ${buttonLabel}</span>
+                            </div>` : ''
+                        }
+                    </div>
                 </div>
             </div>
         `;
@@ -223,6 +250,9 @@ function renderProjectCards(projects) {
 
         // Update the view count using the statistics collection
         card.addEventListener('click', async () => {
+            // Show loading screen immediately
+            loadingScreen.style.display = 'flex';
+
             try {
                 const projectRef = db.collection("statistics").doc(project.id);
                 await db.runTransaction(async (transaction) => {
@@ -238,6 +268,9 @@ function renderProjectCards(projects) {
                 });
             } catch (error) {
                 console.error(`Error incrementing views for ${project.id}:`, error);
+                // Hide the loading screen if the transaction fails before navigation
+                loadingScreen.style.display = 'none';
+                return;
             }
 
             window.location.href = `project_detail.html?id=${encodeURIComponent(project.id)}`;
