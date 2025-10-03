@@ -283,11 +283,6 @@
                 });
         }
 
-        function validateFormURL(formURL) {
-            const requiredPlaceholders = ['(projectName)', '(userName)', '(userEmail)', '(userMessage)', '(amount)', '(transactionId)'];
-            return requiredPlaceholders.every(placeholder => formURL.includes(placeholder));
-        }
-
         document.getElementById('contactForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -295,24 +290,19 @@
             const userName = formElement.querySelector('#name').value;
             const userEmail = formElement.querySelector('#email').value;
             const userMessage = formElement.querySelector('#message').value;
-            const projectName = 'query';
+            const projectName = 'Contact';
             const amount = '-';
             const transactionId = '-';
 
             fetchFormURL().then(formURLTemplate => {
                 if (formURLTemplate) {
-                    if (!validateFormURL(formURLTemplate)) {
-                        alert('Message submission is not available. Please contact through Email.');
-                        return;
-                    }
-
                     const formURL = formURLTemplate
-                        .replace("(projectName)", encodeURIComponent(projectName))
-                        .replace("(userName)", encodeURIComponent(userName))
-                        .replace("(userEmail)", encodeURIComponent(userEmail))
-                        .replace("(userMessage)", encodeURIComponent(userMessage))
-                        .replace("(amount)", encodeURIComponent(amount))
-                        .replace("(transactionId)", encodeURIComponent(transactionId));
+                        .replace("(a)", encodeURIComponent(projectName))
+                        .replace("(b)", encodeURIComponent(userName))
+                        .replace("(c)", encodeURIComponent(userEmail))
+                        .replace("(d)", encodeURIComponent(userMessage))
+                        .replace("(e)", encodeURIComponent(amount))
+                        .replace("(f)", encodeURIComponent(transactionId));
 
                     fetch(formURL, {
                         method: 'POST',

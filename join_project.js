@@ -1,32 +1,35 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyBWoqHihUtSWubkoOTzykbxjtuiIFfgDWg",
-    authDomain: "portfolio-baf28.firebaseapp.com",
-    databaseURL: "https://portfolio-baf28-default-rtdb.firebaseio.com",
-    projectId: "portfolio-baf28",
-    storageBucket: "portfolio-baf28.firebasestorage.app",
-    messagingSenderId: "631350351739",
-    appId: "1:631350351739:web:1a1352cc2b9384b5924fde",
-    measurementId: "G-103VQ05CTT"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
 let yourUpiId = null;
 let formURLTemplate = null;
 
-db.collection('about').doc('teja').get().then((doc) => {
-    if (doc.exists) {
-        yourUpiId = doc.data().upi;
-        formURLTemplate = doc.data().form;
-    } else {
-        console.warn('No such document!');
+async function fetchConfig() {
+    try {
+        const response = await fetch('/info.json');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const config = await response.json();
+        
+        yourUpiId = config.upi;
+        formURLTemplate = config.form;
+        
+    } catch (error) {
+        console.error('Error fetching configuration from /info.json:', error);
+        alert('Failed to load project configuration. Please check the console for details.');
+        yourUpiId = 'error@upi'; 
+        formURLTemplate = null;
     }
-}).catch((error) => {
-    console.error('Error getting document:', error);
-});
+}
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await fetchConfig(); 
+    
+    if (!yourUpiId || !formURLTemplate) {
+        console.error("Essential configuration (UPI ID or Form URL) is missing after fetch.");
+        return; 
+    }
+    
     const pageHeading = document.getElementById('pageHeading');
     const formProjectTitle = document.getElementById('formProjectTitle');
     const backToProjectButton = document.getElementById('backToProjectButton');
@@ -40,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const transactionIdInput = document.getElementById('transactionId');
     const joinProjectForm = document.getElementById('joinProjectForm');
 
-    // QR code elements
     const qrCodeContainer = document.getElementById('qrCodeContainer');
     const qrCodeDiv = document.getElementById('qrCodeDiv');
     const paymentStatus = document.getElementById('paymentStatus');
@@ -56,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     backToProjectButton.href = projectId ? `project_detail.html?id=${projectId}` : 'projects.html';
 
-    // Hint below fund input
     const fundAmountNote = document.createElement('small');
     fundAmountNote.className = 'block mt-1 mb-5';
     fundAmountNote.textContent = '*Minimum sponsorship amount is ₹10.';
@@ -93,49 +94,56 @@ document.addEventListener('DOMContentLoaded', () => {
         paymentStatus.textContent = '';
     }
 
-function generateUpiPaymentQr(amount) {
-    const transactionNote = `Funding for Project: ${projectName}`;
-    const transactionRef = 'TXN' + Date.now();
-    const websiteUrl = window.location.origin;
+    function generateUpiPaymentQr(amount) {
+        const transactionNote = `Funding for Project: ${projectName}`;
+        const transactionRef = 'TXN' + Date.now();
+        const websiteUrl = window.location.origin;
 
-    const upiUrl = `upi://pay?pa=${encodeURIComponent(yourUpiId)}&pn=Portfolio&tn=${encodeURIComponent(transactionNote)}&am=${amount.toFixed(2)}&cu=INR&tr=${encodeURIComponent(transactionRef)}&url=${encodeURIComponent(websiteUrl)}`;
-
-    const upiLink = document.getElementById('upi-link');
-    if (upiLink) {
-        upiLink.href = upiUrl;
-        upiLink.textContent = "Or click here to pay via UPI app";
-        upiLink.style.display = "inline-block";
-    }
-
-    const upiIdDisplay = document.getElementById('upi-id');
-    if (upiIdDisplay) {
-        upiIdDisplay.textContent = yourUpiId;
-    }
-
-    const qrCodeDiv = document.getElementById('qrCodeDiv');
-    const qrCodeContainer = document.getElementById('qrCodeContainer');
-    const paymentStatus = document.getElementById('paymentStatus');
-
-    qrCodeDiv.innerHTML = '';
-    qrCodeContainer.style.display = 'flex';
-
-    if (typeof QRCode !== 'undefined') {
-        new QRCode(qrCodeDiv, {
-            text: upiUrl,
-            width: 200,
-            height: 200,
-            colorDark: "#000",
-            colorLight: "#fff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
-    } else {
-        if (paymentStatus) {
-            paymentStatus.textContent = "QR Code library not found.";
-            paymentStatus.className = "text-red-600";
+        if (!yourUpiId) {
+             console.error("UPI ID is not set. Cannot generate QR code.");
+             paymentStatus.textContent = "Error: UPI ID not available.";
+             paymentStatus.className = "text-red-600";
+             return;
         }
+        
+        const upiUrl = `upi://pay?pa=${encodeURIComponent(yourUpiId)}&pn=Portfolio&tn=${encodeURIComponent(transactionNote)}&am=${amount.toFixed(2)}&cu=INR&tr=${encodeURIComponent(transactionRef)}&url=${encodeURIComponent(websiteUrl)}`;
+
+        const upiLink = document.getElementById('upi-link');
+        if (upiLink) {
+            upiLink.href = upiUrl;
+            upiLink.textContent = "Or click here to pay via UPI app";
+            upiLink.style.display = "inline-block";
+        }
+
+        const upiIdDisplay = document.getElementById('upi-id');
+        if (upiIdDisplay) {
+            upiIdDisplay.textContent = yourUpiId;
+        }
+
+        const qrCodeDiv = document.getElementById('qrCodeDiv');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        const paymentStatus = document.getElementById('paymentStatus');
+
+        qrCodeDiv.innerHTML = '';
+        qrCodeContainer.style.display = 'flex';
+
+        if (typeof QRCode !== 'undefined') {
+            new QRCode(qrCodeDiv, {
+                text: upiUrl,
+                width: 200,
+                height: 200,
+                colorDark: "#000",
+                colorLight: "#fff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        } else {
+            if (paymentStatus) {
+                paymentStatus.textContent = "QR Code library not found. Ensure 'qrcode.js' is loaded.";
+                paymentStatus.className = "text-red-600";
+            }
+        }
+        document.getElementById('qrCodeDiv')?.removeAttribute('title');
     }
-    document.getElementById('qrCodeDiv')?.removeAttribute('title');
-}
     
     joinProjectForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -160,16 +168,17 @@ function generateUpiPaymentQr(amount) {
 
     if (formURLTemplate) {
         const formURL = formURLTemplate
-            .replace("(projectName)", encodeURIComponent(projectName))
-            .replace("(userName)", encodeURIComponent(userName))
-            .replace("(userEmail)", encodeURIComponent(userEmail))
-            .replace("(userMessage)", encodeURIComponent(userMessage))
-            .replace("(amount)", encodeURIComponent(amount))
-            .replace("(transactionId)", encodeURIComponent(transactionId));
+            .replace("(a)", encodeURIComponent(projectName))
+            .replace("(b)", encodeURIComponent(userName))
+            .replace("(c)", encodeURIComponent(userEmail))
+            .replace("(d)", encodeURIComponent(userMessage))
+            .replace("(e)", encodeURIComponent(amount))
+            .replace("(f)", encodeURIComponent(transactionId));
+        
         try {
             await fetch(formURL, {
                 method: 'POST',
-                mode: 'no-cors'
+                mode: 'no-cors' 
             });
 
             joinProjectForm.reset();
@@ -178,7 +187,7 @@ function generateUpiPaymentQr(amount) {
             qrCodeDiv.innerHTML = '';
             const existingBtn = document.getElementById('upiPaymentBtn');
             if (existingBtn) existingBtn.remove();
-
+            
             showThankYouModal(isSponsor, projectName);
         } catch (error) {
             console.error("Form submission failed:", error);
@@ -186,6 +195,7 @@ function generateUpiPaymentQr(amount) {
         }
     } else {
         console.error('Form URL template is not available');
+        alert("Submission failed: Form configuration error.");
     }
 });
 
@@ -229,7 +239,7 @@ function generateUpiPaymentQr(amount) {
     const blastContainer = document.getElementById('blastContainer');
     const PARTICLE_COUNT = 128;
     const PARTICLE_SIZE = {w: 8, h: 6};
-    const containerWidth = 1024;
+    const containerWidth = 1024; 
     const containerHeight = 700;
     const centerX = containerWidth / 2;
     const centerY = containerHeight / 2;
@@ -269,8 +279,8 @@ function generateUpiPaymentQr(amount) {
 
     const paths = particles.map(() => ({
         p0: {x: centerX, y: centerY},
-        p1: {x: Math.random() * containerWidth, y: Math.random() * containerHeight},
-        p2: {x: Math.random() * containerWidth, y: Math.random() * containerHeight},
+        p1: {x: centerX + (Math.random() - 0.5) * containerWidth * 0.2, y: centerY - Math.random() * containerHeight * 0.5},
+        p2: {x: Math.random() * containerWidth, y: centerY - Math.random() * containerHeight * 0.2},
         p3: {x: Math.random() * containerWidth, y: containerHeight + 128}
     }));
 
@@ -283,11 +293,13 @@ function generateUpiPaymentQr(amount) {
         const easedT = easeOutCubic(t);
 
         particles.forEach((p, i) => {
-            const pos = cubicBezier(paths[i].p0, paths[i].p1, paths[i].p2, paths[i].p3, easedT);
+            const path = paths[i];
+            const pos = cubicBezier(path.p0, path.p1, path.p2, path.p3, easedT); 
+            
             p.style.left = `${pos.x - PARTICLE_SIZE.w/2}px`;
             p.style.top = `${pos.y - PARTICLE_SIZE.h/2}px`;
             p.style.opacity = '1';
-            p.style.transform = `rotate(${easedT * 720}deg) scaleY(${Math.sin(Math.PI * easedT * 10).toFixed(2)})`;
+            p.style.transform = `rotate(${easedT * 720}deg) scaleY(${Math.abs(Math.cos(Math.PI * easedT * 5)).toFixed(2)})`;
         });
 
         if (t < 1) {
@@ -300,18 +312,18 @@ function generateUpiPaymentQr(amount) {
     requestAnimationFrame(animate);
 }
 
+    // FIX: Moved the transactionIdInput listener inside DOMContentLoaded scope
+    transactionIdInput.addEventListener('input', () => {
+        const transactionId = transactionIdInput.value.trim();
+        const isValid = transactionId.length === 23;
 
-});
+        if (!isValid) {
+            paymentStatus.textContent = "Transaction ID must be exactly 23 characters.";
+            paymentStatus.style.color = "red";
+        } else {
+            paymentStatus.textContent = "Transaction ID is valid.";
+            paymentStatus.style.color = "green";
+        }
+    });
 
-transactionIdInput.addEventListener('input', () => {
-    const transactionId = transactionIdInput.value.trim();
-    const isValid = transactionId.length === 23;
-
-    if (!isValid) {
-        paymentStatus.textContent = "Transaction ID must be exactly 23 characters.";
-        paymentStatus.style.color = "red";
-    } else {
-        paymentStatus.textContent = "Transaction ID is valid.";
-        paymentStatus.style.color = "green";
-    }
 });

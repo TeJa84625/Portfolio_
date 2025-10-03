@@ -1,7 +1,8 @@
 {
     "profile": "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg",
     "resume": "",
-    "form": "https://docs.google.com/forms/d/e/1FAIpQLSdeulDHC05Ug16iyAp19MUI334OlqmlrYYt2lF1dCYFe0DtPw/formResponse?entry.1328315084=(projectName)&entry.1878610209=(userName)&entry.1587908217=(userEmail)&entry.1876828639=(userMessage)&entry.1057306725=(amount)&entry.1746085745=(transactionId)",
+    "upi": "6301619629.wallet@phonepe",
+    "form": "https://docs.google.com/forms/d/e/1FAIpQLSeJnGaYX57yuohra8zfaH85MY_RRMZdMU23m2DwYH2FEKh4MA/formResponse?usp=pp_url&entry.692037109=(a)&entry.625490328=(b)&entry.656923536=(c)&entry.361199134=(d)&entry.2067384019=(e)&entry.1113722693=(f)",
     "skills": "Python,C++,Java,Firebase,React Native,Node.js,MySQL,Git,IoT,Game Design (UE5)",
     "certifications": [
     {
