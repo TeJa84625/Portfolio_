@@ -1,0 +1,36 @@
+{
+  "profile": "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg",
+  "resume": "",
+  "form": "https://docs.google.com/forms/d/e/1FAIpQLSdeulDHC05Ug16iyAp19MUI334OlqmlrYYt2lF1dCYFe0DtPw/formResponse?entry.1328315084=(projectName)&entry.1878610209=(userName)&entry.1587908217=(userEmail)&entry.1876828639=(userMessage)&entry.1057306725=(amount)&entry.1746085745=(transactionId)",
+  "skills": "Python,C++,Java,Firebase,React Native,Node.js,MySQL,Git,IoT,Game Design (UE5)",
+  "certifications": [
+    {
+      "name": "Privacy and Security in Online Social Media - NPTEL",
+      "photo": "/Data/Privacy and Security in Online Social Media.jpg"
+    },
+    {
+      "name": "AWS Certified AI Practitioner - AWS",
+      "photo": "/Data/AWS Certified AI Practitioner certificate.jpg"
+    },
+    {
+      "name": "Joy of Computing using Python - NPTEL",
+      "photo": "/Data/The Joy of Computing using Python.jpg"
+    },
+    {
+      "name": "A Complete Guide to Game Design - HP",
+      "photo": "/Data/HP HPGG02.en Certificate _ edX.jpg"
+    },
+    {
+      "name": "Java Fundamentals - EDX",
+      "photo": "/Data/GalileoX Program Certificate _ edX.jpg"
+    },
+    {
+      "name": "Advanced Programming in C++ - CISCO",
+      "photo": "/Data/TEJAGAVARA-Advanced Program-certificate.jpg"
+    },
+    {
+      "name": "Machine Learning for Soil and Crop - NPTEL",
+      "photo": "/Data/Machine Learning for Soil and Crop Management.jpg"
+    }
+  ]
+}

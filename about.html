@@ -102,6 +102,19 @@
             color: #4A90E2;
         }
         }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
@@ -212,59 +225,56 @@
         </script>
     </footer>
 
-    <div id="image-modal"
-        class="fixed inset-0 z-50 hidden bg-black bg-opacity-70 flex justify-center items-center px-1">
+    <div id="image-modal" class="fixed inset-0 z-50 hidden bg-black bg-opacity-70 flex justify-center items-center px-1">
         <span class="absolute top-2 right-4 text-white text-2xl cursor-pointer" onclick="closeModal()">&times;</span>
-        <div
-            class="bg-white p-4 rounded-lg w-full sm:w-[90%] md:w-[80%] lg:w-[55%] max-h-[90vh] overflow-auto relative box-border">
+        <div class="p-4 rounded-lg w-full sm:w-[90%] md:w-[80%] lg:w-[55%] max-h-[90vh] overflow-auto relative box-border">
             <img id="modal-img" src="" alt="Certificate Image" class="w-full h-auto object-contain" />
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
-
     <script>
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBWoqHihUtSWubkoOTzykbxjtuiIFfgDWg",
-            authDomain: "portfolio-baf28.firebaseapp.com",
-            databaseURL: "https://portfolio-baf28-default-rtdb.firebaseio.com",
-            projectId: "portfolio-baf28",
-            storageBucket: "portfolio-baf28.firebasestorage.app",
-            messagingSenderId: "631350351739",
-            appId: "1:631350351739:web:1a1352cc2b9384b5924fde",
-            measurementId: "G-103VQ05CTT"
-        };
-
-        // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-        const storage = firebase.storage();
-
-        // Get references to HTML elements
         const profilePhotoElement = document.getElementById("profile-photo");
         const skillsContainer = document.getElementById("skills-container");
         const certsContainer = document.getElementById("certs-container");
 
-        // Function to open the modal and display the image
         function openModal(imageSrc) {
             const modal = document.getElementById("image-modal");
             const modalImg = document.getElementById("modal-img");
-            modalImg.src = imageSrc;
+
+            modalImg.style.display = 'none';
+            modalImg.src = '';
             modal.style.display = "flex";
+
+            const loadingDiv = document.createElement("div");
+            loadingDiv.id = "modal-loading";
+            loadingDiv.className = "text-xl text-white text-center p-8";
+            loadingDiv.innerText = "Loading image...";
+
+            const modalContent = modal.querySelector('div');
+            modalContent.prepend(loadingDiv);
+
+            modalImg.onload = function () {
+                loadingDiv.remove();
+                modalImg.style.display = 'block';
+            };
+
+            modalImg.onerror = function () {
+                loadingDiv.innerText = "Failed to load image.";
+                modalImg.style.display = 'block';
+            };
+
+            modalImg.src = imageSrc;
         }
 
-        // Function to close the modal
         function closeModal() {
             const modal = document.getElementById("image-modal");
+            const loadingDiv = document.getElementById("modal-loading");
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
             modal.style.display = "none";
         }
 
-        // Close the modal if the user clicks outside of the modal content
         window.onclick = function (event) {
             const modal = document.getElementById("image-modal");
             if (event.target === modal) {
@@ -272,88 +282,71 @@
             }
         };
 
-        // Fetch data from Firestore
         async function fetchPortfolioData() {
-            const docRef = db.collection("about").doc("teja");
-            const doc = await docRef.get();
+            try {
+                const response = await fetch('/info.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data = await response.json();
 
-            if (doc.exists) {
-                const data = doc.data();
-
-                // Update Profile Photo
                 if (data.profile) {
-                    // Check if it's a Storage path or a direct URL/Base64 string
-                    // This handles the error by checking the string format first
-                    if (data.profile.startsWith('images/')) {
-                        try {
-                            const storageRef = storage.ref(data.profile);
-                            const imageUrl = await storageRef.getDownloadURL();
-                            profilePhotoElement.src = imageUrl;
-                        } catch (error) {
-                            console.error("Error fetching profile photo from Storage:", error);
-                            profilePhotoElement.src = "images/profile.png"; // Fallback
-                        }
-                    } else {
-                        // Assume it's a direct URL or Base64 string
-                        profilePhotoElement.src = data.profile;
-                    }
+                    profilePhotoElement.src = data.profile;
                 }
 
                 if (data.resume) {
                     const resumeLink = document.getElementById('resumeLink');
-                    resumeLink.href = data.resume;          // set href to resume URL/path
-                    resumeLink.target = "_blank";           // open in new tab
-                    resumeLink.setAttribute('download', ''); // trigger download on click (optional)
+                    resumeLink.href = data.resume;
+                    resumeLink.target = "_blank";
+                    resumeLink.setAttribute('download', '');
                     resumeLink.textContent = "My Resume";
                     document.getElementById('resumeLink').classList.remove('hidden');
                 } else {
-                    // If no resume, optionally hide the link or disable it
-                    const resumeLink = document.getElementById('resumeLink');
-                    resumeLink.style.display = 'none';  // hides the link if no resume
+                    document.getElementById('resumeLink').classList.add('hidden');
                 }
 
-                // Update Skills
                 skillsContainer.innerHTML = "";
                 document.getElementById('skillloading').classList.add('hidden');
-                if (data.skills && Array.isArray(data.skills)) {
-                    data.skills.forEach(skill => {
+                if (data.skills) {
+                    const skillArray = data.skills.split(',').map(s => s.trim());
+                    skillArray.forEach(skill => {
                         const span = document.createElement("span");
-                        span.className = "bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full";
+                        span.className = "bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full dark:text-gray-900";
                         span.innerText = skill;
                         skillsContainer.appendChild(span);
                     });
                 }
 
-                // Update Certifications
                 certsContainer.innerHTML = "";
                 document.getElementById('certsloading').classList.add('hidden');
-                if (data.certifications) {
-                    for (const certName in data.certifications) {
+                if (data.certifications && Array.isArray(data.certifications)) {
+                    data.certifications.forEach(cert => {
                         const certDiv = document.createElement("div");
-                        certDiv.className = "bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full cursor-pointer";
-                        certDiv.innerText = certName;
+                        certDiv.className = "bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full cursor-pointer dark:text-gray-900";
+                        certDiv.innerText = cert.name;
 
                         certDiv.addEventListener('click', function () {
-                            openModal(data.certifications[certName]);
+                            openModal(cert.photo);
                         });
                         certsContainer.appendChild(certDiv);
-                    }
+                    });
                 }
-            } else {
-                console.log("No such document!");
+            } catch (error) {
+                console.error("Error fetching portfolio data from /info.json:", error);
+                document.getElementById('skillloading').innerText = "Failed to load skills.";
+                document.getElementById('certsloading').innerText = "Failed to load certifications.";
             }
         }
 
-        // Call the function to fetch and display data when the page loads
         fetchPortfolioData();
 
-        // Mobile Menu Toggle
         const menuBtn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         menuBtn.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
     </script>
+
     <script>
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {

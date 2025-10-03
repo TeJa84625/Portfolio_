@@ -216,9 +216,10 @@
                 </p>
                 <div class="space-y-4">
                     <p class="text-xl font-semibold dark:text-white">
-                        Email:
-                        <a class="text-blue-600 hover:underline email-link">-</a>
+                        Email: 
+                        <a class="text-blue-600 hover:underline email-link" href="mailto:tejagavara.dev@gmail.com??subject=Inquiry%20From%20Portfolio">TejaGavara.dev</a>
                     </p>
+
                     <div class="mt-6">
                         <p class="dark:text-gray-400">Connect with me on social media:</p>
         
@@ -252,45 +253,6 @@
             document.getElementById('year').textContent = new Date().getFullYear();
         </script>
     </footer>
-
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
-    <script>
-        let formURLTemplate = null;
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBWoqHihUtSWubkoOTzykbxjtuiIFfgDWg",
-            authDomain: "portfolio-baf28.firebaseapp.com",
-            databaseURL: "https://portfolio-baf28-default-rtdb.firebaseio.com",
-            projectId: "portfolio-baf28",
-            storageBucket: "portfolio-baf28.firebasestorage.app",
-            messagingSenderId: "631350351739",
-            appId: "1:631350351739:web:1a1352cc2b9384b5924fde",
-            measurementId: "G-103VQ05CTT"
-        };
-
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        db.collection('about').doc('teja').get().then((doc) => {
-            if (doc.exists) {
-                const email = doc.data().email;
-                formURLTemplate = doc.data().form;
-                if (email) {
-                    const emailLink = document.querySelector('.email-link');
-                    if (emailLink) {
-                        emailLink.textContent = email;
-                        emailLink.href = `mailto:${email}?subject=Message%20for%20Gavara%20Teja%20via%20Portfolio%20Contact%20Mail`;
-                    }
-                }
-            } else {
-                console.warn('No such document!');
-            }
-        }).catch((error) => {
-            console.error('Error getting document:', error);
-        });
-    </script>
     
     <script>
         document.addEventListener('contextmenu', e => e.preventDefault());
@@ -309,6 +271,23 @@
     </script>
     
     <script>
+        function fetchFormURL() {
+            return fetch('/info.json')
+                .then(response => response.json())
+                .then(data => {
+                    return data.form;
+                })
+                .catch(error => {
+                    alert('There was an error to send the message. Please try again later.');
+                    return null;
+                });
+        }
+
+        function validateFormURL(formURL) {
+            const requiredPlaceholders = ['(projectName)', '(userName)', '(userEmail)', '(userMessage)', '(amount)', '(transactionId)'];
+            return requiredPlaceholders.every(placeholder => formURL.includes(placeholder));
+        }
+
         document.getElementById('contactForm').addEventListener('submit', function (event) {
             event.preventDefault();
 
@@ -320,30 +299,37 @@
             const amount = '-';
             const transactionId = '-';
 
-            if (formURLTemplate) {
-                const formURL = formURLTemplate
-                    .replace("(projectName)", encodeURIComponent(projectName))
-                    .replace("(userName)", encodeURIComponent(userName))
-                    .replace("(userEmail)", encodeURIComponent(userEmail))
-                    .replace("(userMessage)", encodeURIComponent(userMessage))
-                    .replace("(amount)", encodeURIComponent(amount))
-                    .replace("(transactionId)", encodeURIComponent(transactionId));
+            fetchFormURL().then(formURLTemplate => {
+                if (formURLTemplate) {
+                    if (!validateFormURL(formURLTemplate)) {
+                        alert('Message submission is not available. Please contact through Email.');
+                        return;
+                    }
 
-                fetch(formURL, {
-                    method: 'POST',
-                    mode: 'no-cors'
-                })
-                    .then(() => {
-                        alert('success', 'Success!', 'Your message has been sent successfully! Thank you for reaching out.');
-                        formElement.reset();
+                    const formURL = formURLTemplate
+                        .replace("(projectName)", encodeURIComponent(projectName))
+                        .replace("(userName)", encodeURIComponent(userName))
+                        .replace("(userEmail)", encodeURIComponent(userEmail))
+                        .replace("(userMessage)", encodeURIComponent(userMessage))
+                        .replace("(amount)", encodeURIComponent(amount))
+                        .replace("(transactionId)", encodeURIComponent(transactionId));
+
+                    fetch(formURL, {
+                        method: 'POST',
+                        mode: 'no-cors'
                     })
-                    .catch(error => {
-                        console.error('Error submitting form:', error);
-                        alert('error', 'Error!', 'There was an error sending your message. Please try again or contact me directly via email.');
-                    });
-            } else {
-                console.error('Form URL template is not available');
-            }
+                        .then(() => {
+                            alert('Success', 'Your message has been sent successfully! Thank you for reaching out.');
+                            formElement.reset();
+                        })
+                        .catch(error => {
+                            console.error('Error submitting form:', error);
+                            alert('Error', 'There was an error sending your message. Please try again or contact me directly via email.');
+                        });
+                } else {
+                    alert('Error', 'Message submission is not available. Please try again later.');
+                }
+            });
         });
     </script>
 
