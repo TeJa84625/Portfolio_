@@ -306,47 +306,57 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function setupActionButtonListener(project) {
-        const actionButton = document.getElementById('projectActionButton');
-        if (actionButton && project.button_label && project.button_url) {
-            actionButton.addEventListener('click', async (event) => {
-                event.preventDefault();
+    const actionButton = document.getElementById('projectActionButton');
+    const loadingSpinner = document.getElementById('loadingSpinner');
 
-                if (!project || !project.id) {
-                    window.open(project.button_url, '_blank');
-                    return;
-                }
-                
-                // Get a reference to the statistics document
-                const statsRef = db.collection("statistics").doc(project.id);
-                const buttonLabel = project.button_label.toLowerCase();
+    if (actionButton && project.button_label && project.button_url) {
+        actionButton.addEventListener('click', async (event) => {
+            event.preventDefault();
 
-                try {
-                    // Use a transaction to safely increment the downloads counter
-                    if (buttonLabel === "download" || buttonLabel === "visit website") {
-                        await db.runTransaction(async (transaction) => {
-                            const doc = await transaction.get(statsRef);
-                            if (!doc.exists) {
-                                // If the document doesn't exist, create it with a download count of 1
-                                transaction.set(statsRef, {
-                                    downloads: 1,
-                                    views: (currentProjectData.views || 1) 
-                                });
-                            } else {
-                                 // If it exists, increment the existing downloads count
-                                const newDownloads = (doc.data().downloads || 0) + 1;
+            if (loadingSpinner) {
+                loadingSpinner.classList.remove('hidden');
+            }
+
+            if (!project || !project.id) {
+                window.open(project.button_url, '_blank');
+                return;
+            }
+
+            const statsRef = db.collection("statistics").doc(project.id);
+            const buttonLabel = project.button_label.toLowerCase();
+
+            try {
+                if (buttonLabel === "download" || buttonLabel === "visit website") {
+                    await db.runTransaction(async (transaction) => {
+                        const doc = await transaction.get(statsRef);
+                        if (!doc.exists) {
+                            transaction.set(statsRef, {
+                                downloads: 0,
+                                views: (currentProjectData.views || 1)
+                            });
+                        } else {
+                            const currentDownloads = doc.data().downloads || 0;
+                            const currentViews = doc.data().views || 0;
+
+                            if (currentViews > currentDownloads) {
+                                const newDownloads = currentDownloads + 1;
                                 transaction.update(statsRef, { downloads: newDownloads });
                             }
-                        });
-                    }
-                } catch (error) {
-                    console.error(`Error incrementing download stats:`, error);
-                } finally {
-                    // Open the URL in a new tab after the transaction is attempted
-                    window.open(project.button_url, '_blank');
+                        }
+                    });
                 }
-            });
-        }
+            } catch (error) {
+                console.error(`Error incrementing download stats:`, error);
+            } finally {
+                if (loadingSpinner) {
+                    loadingSpinner.classList.add('hidden');
+                }
+
+                window.open(project.button_url, '_blank');
+            }
+        });
     }
+}
 
     function escapeHtml(unsafe) {
         if (typeof unsafe !== 'string') return unsafe;
