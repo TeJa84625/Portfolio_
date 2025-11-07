@@ -100,10 +100,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         const websiteUrl = window.location.origin;
 
         if (!yourUpiId) {
-             console.error("UPI ID is not set. Cannot generate QR code.");
-             paymentStatus.textContent = "Error: UPI ID not available.";
-             paymentStatus.className = "text-red-600";
-             return;
+            console.error("UPI ID is not set. Cannot generate QR code.");
+            paymentStatus.textContent = "Error: UPI ID not available.";
+            paymentStatus.className = "text-red-600";
+            return;
         }
         
         const upiUrl = `upi://pay?pa=${encodeURIComponent(yourUpiId)}&pn=Portfolio&tn=${encodeURIComponent(transactionNote)}&am=${amount.toFixed(2)}&cu=INR&tr=${encodeURIComponent(transactionRef)}&url=${encodeURIComponent(websiteUrl)}`;
