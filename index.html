@@ -197,6 +197,7 @@
         const modelViewer = document.querySelector('model-viewer');
         const spinner = document.getElementById('loading-spinner');
         const loadingMessage = document.querySelector('#loading-spinner p');
+        const errorMessage = document.createElement('p');
 
         modelViewer.addEventListener('load', () => {
           spinner.style.display = 'none';
@@ -214,6 +215,15 @@
         setTimeout(function () {
           if (loadingMessage && spinner.style.display !== 'none') {
             loadingMessage.textContent = 'Taking longer than expected...';
+            setTimeout(function () {
+              if (spinner.style.display !== 'none') {
+                spinner.style.display = 'none';
+                const errorText = document.createTextNode("Sorry, your browser doesn't support this content.");
+                errorMessage.appendChild(errorText);
+                errorMessage.classList.add('text-red-500', 'text-lg', 'text-center');
+                document.getElementById('loading-spinner').appendChild(errorMessage);
+              }
+            }, 10000);
           }
         }, 5000);
       </script>
