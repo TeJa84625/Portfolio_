@@ -182,22 +182,27 @@
               fill="none" stroke="currentColor">
               <path class="opacity-75" fill="none" d="M4 12a8 8 0 0 1 16 0" stroke-linecap="round" stroke-width="4"></path>
             </svg>
-            <p class="mt-2 text-lg text-gray-700">Loading 3D Model...</p>
+            <p class="mt-2 text-lg text-gray-700">Loading Surprise...</p>
           </div>
         </div>
       
         <model-viewer id="earth-model" src="Models/Earth.glb"
           alt="A 3D model of an Earth representing Teja Gavara's portfolio" auto-rotate camera-controls shadow-intensity="0"
           class="w-full h-full rounded-lg" loading="eager" reveal="auto" animation-name="rotation" animation-speed="1" loop
-          autoplay camera-orbit="0deg 75deg 5.5m" on-load="hideLoading()">
+          autoplay camera-orbit="0deg 75deg 5.5m" on-load="hideLoading(5)">
         </model-viewer>
       </div>
       
       <script>
-        function hideLoading() {
-          const loadingSpinner = document.getElementById('loading-spinner');
-          loadingSpinner.style.display = 'none';
-        }
+        hideLoading(5);
+        function hideLoading(delay) {
+            setTimeout(function () {
+              const spinner = document.getElementById('loading-spinner');
+              if (spinner) {
+                spinner.style.display = 'none';
+              }
+            }, delay * 1000);
+          }
       </script>
 
     </div>
