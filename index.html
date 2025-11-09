@@ -194,15 +194,28 @@
       </div>
       
       <script>
-        hideLoading(5);
+        const modelViewer = document.querySelector('model-viewer');
+        const spinner = document.getElementById('loading-spinner');
+        const loadingMessage = document.querySelector('#loading-spinner p');
+
+        modelViewer.addEventListener('load', () => {
+          spinner.style.display = 'none';
+        });
+
         function hideLoading(delay) {
-            setTimeout(function () {
-              const spinner = document.getElementById('loading-spinner');
-              if (spinner) {
-                spinner.style.display = 'none';
-              }
-            }, delay * 1000);
+          setTimeout(function () {
+            const spinner = document.getElementById('loading-spinner');
+            if (spinner) {
+              spinner.style.display = 'none';
+            }
+          }, delay * 1000);
+        }
+
+        setTimeout(function () {
+          if (loadingMessage && spinner.style.display !== 'none') {
+            loadingMessage.textContent = 'Taking longer than expected...';
           }
+        }, 5000);
       </script>
 
     </div>
