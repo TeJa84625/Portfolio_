@@ -30,7 +30,7 @@ const paginationContainer = document.getElementById('paginationContainer');
 let allProjectsData = [];
 let filteredAndSortedProjects = [];
 let currentPage = 1;
-const projectsPerPage = 10;
+const projectsPerPage = 9;
 
 // --- Data Fetching ---
 
