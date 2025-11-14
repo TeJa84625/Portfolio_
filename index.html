@@ -186,16 +186,9 @@
           </div>
         </div>
         
-        <div id="sorry-message" class="absolute inset-0 flex justify-center items-center hidden z-50">
-          <div class="text-center">
-            <div class="flex justify-center items-center">
-              <img src="images/logo.png" alt="Logo" class="w-auto h-auto mb-4" />
-            </div>
-            <p class="text-lg text-red-500">
+        <p id="sorry-message" class="text-lg text-red-500 hidden absolute inset-0 flex justify-center items-center">
               Sorry, your browser doesn't support this content.
-            </p>
-          </div>
-        </div>
+        </p>
 
         <model-viewer id="earth-model" src="Models/Earth.glb"
           alt="A 3D model of an Earth representing Teja Gavara's portfolio" auto-rotate camera-controls shadow-intensity="0"
@@ -231,9 +224,9 @@
                 spinner.style.display = 'none';
                 sorryMessage.classList.remove('hidden');
               }
-            }, 15000);
+            }, 1000);
           }
-        }, 5000);
+        }, 1000);
       </script>
 
 
