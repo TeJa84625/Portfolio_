@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const paymentStatus = document.getElementById('paymentStatus');
 
     const urlParams = new URLSearchParams(window.location.search);
-    const projectName = urlParams.get('projectName') || 'Your Project';
+    const projectName = urlParams.get('projectName') || 'Teja`s Project';
     const projectId = urlParams.get('projectId');
 
     if (projectName) {
@@ -95,54 +95,73 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function generateUpiPaymentQr(amount) {
-        const transactionNote = `Funding for Project: ${projectName}`;
+        const paymentStatus = document.getElementById('paymentStatus');
+        const qrCodeDiv = document.getElementById('qrCodeDiv');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        const upiLink = document.getElementById('upi-link');
+        const upiIdDisplay = document.getElementById('upi-id');
+
+        const transactionNote = `Funding for Project: ${typeof projectName !== 'undefined' ? projectName : 'Project'}`;
         const transactionRef = 'TXN' + Date.now();
         const websiteUrl = window.location.origin;
+        const logoUrl = "/images/logo.png";
 
-        if (!yourUpiId) {
+        if (typeof yourUpiId === 'undefined' || !yourUpiId) {
             console.error("UPI ID is not set. Cannot generate QR code.");
-            paymentStatus.textContent = "Error: UPI ID not available.";
-            paymentStatus.className = "text-red-600";
+            if (paymentStatus) {
+                paymentStatus.textContent = "Error: UPI ID not available.";
+                paymentStatus.className = "text-red-600";
+            }
             return;
         }
-        
+
         const upiUrl = `upi://pay?pa=${encodeURIComponent(yourUpiId)}&pn=Portfolio&tn=${encodeURIComponent(transactionNote)}&am=${amount.toFixed(2)}&cu=INR&tr=${encodeURIComponent(transactionRef)}&url=${encodeURIComponent(websiteUrl)}`;
 
-        const upiLink = document.getElementById('upi-link');
         if (upiLink) {
             upiLink.href = upiUrl;
             upiLink.textContent = "Or click here to pay via UPI app";
             upiLink.style.display = "inline-block";
         }
 
-        const upiIdDisplay = document.getElementById('upi-id');
         if (upiIdDisplay) {
             upiIdDisplay.textContent = yourUpiId;
         }
 
-        const qrCodeDiv = document.getElementById('qrCodeDiv');
-        const qrCodeContainer = document.getElementById('qrCodeContainer');
-        const paymentStatus = document.getElementById('paymentStatus');
+        if (qrCodeDiv && qrCodeContainer) {
+            qrCodeDiv.innerHTML = '';
+            qrCodeContainer.style.display = 'flex';
 
-        qrCodeDiv.innerHTML = '';
-        qrCodeContainer.style.display = 'flex';
+            if (typeof QRCodeStyling !== 'undefined') {
+                const qrCode = new QRCodeStyling({
+                    width: 200,
+                    height: 200,
+                    type: "svg",
+                    data: upiUrl,
+                    image: logoUrl,
+                    dotsOptions: {
+                        color: "#000000",
+                        type: "classy-rounded"
+                    },
+                    backgroundOptions: {
+                        color: "#ffffff",
+                    },
+                    imageOptions: {
+                        crossOrigin: "anonymous",
+                        margin: 5,
+                        imageSize: 0.4
+                    }
+                });
 
-        if (typeof QRCode !== 'undefined') {
-            new QRCode(qrCodeDiv, {
-                text: upiUrl,
-                width: 200,
-                height: 200,
-                colorDark: "#000",
-                colorLight: "#fff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-        } else {
-            if (paymentStatus) {
-                paymentStatus.textContent = "QR Code library not found. Ensure 'qrcode.js' is loaded.";
-                paymentStatus.className = "text-red-600";
+                qrCode.append(qrCodeDiv);
+                qrCodeDiv.removeAttribute('title');
+
+            } else {
+                if (paymentStatus) {
+                    paymentStatus.textContent = "QR Library Error: 'qr-code-styling' script is missing.";
+                    paymentStatus.className = "text-red-600";
+                }
             }
         }
-        document.getElementById('qrCodeDiv')?.removeAttribute('title');
     }
     
     joinProjectForm.addEventListener('submit', async (e) => {
